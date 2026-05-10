@@ -1,3 +1,8 @@
 spring:
   application:
-    name: semester-work-spring
+    name: food-diary
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
