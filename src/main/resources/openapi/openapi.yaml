@@ -1,0 +1,982 @@
+openapi: 3.0.3
+
+info:
+  title: Food Diary API
+  description: REST API и AJAX API для системы расчёта БЖУ и ведения дневника питания.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Products
+    description: REST API для управления продуктами текущего пользователя
+  - name: Nutrition Lookup
+    description: AJAX API для автозаполнения БЖУ продукта через внешний API
+  - name: Diary
+    description: API для дневника питания и AJAX-пересчёта БЖУ
+
+paths:
+  /api/products:
+    get:
+      tags: [Products]
+      summary: Получить список продуктов текущего пользователя
+      description: Возвращает продукты, созданные текущим авторизованным пользователем.
+      operationId: getCurrentUserProducts
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть названия продукта для поиска
+          schema:
+            type: string
+            example: яблоко
+        - name: page
+          in: query
+          required: false
+          description: Номер страницы, начиная с 0
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            example: 0
+        - name: size
+          in: query
+          required: false
+          description: Размер страницы
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 20
+        - name: sort
+          in: query
+          required: false
+          description: Поле сортировки
+          schema:
+            type: string
+            enum: [createdAt,desc, createdAt,asc, name,asc, name,desc]
+            default: createdAt,desc
+      responses:
+        "200":
+          description: Список продуктов успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPageResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags: [Products]
+      summary: Создать продукт
+      description: Создаёт новый продукт для текущего авторизованного пользователя.
+      operationId: createProduct
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateRequest"
+            example:
+              name: Яблоко
+              caloriesPer100g: 52
+              proteinsPer100g: 0.3
+              fatsPer100g: 0.2
+              carbohydratesPer100g: 14
+      responses:
+        "201":
+          description: Продукт успешно создан
+          headers:
+            Location:
+              description: URL созданного продукта
+              schema:
+                type: string
+                example: /api/products/1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/products/{id}:
+    get:
+      tags: [Products]
+      summary: Получить продукт по id
+      description: Возвращает продукт текущего пользователя по идентификатору.
+      operationId: getProductById
+      security:
+        - sessionAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      responses:
+        "200":
+          description: Продукт найден
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      tags: [Products]
+      summary: Обновить продукт
+      description: Обновляет продукт текущего пользователя.
+      operationId: updateProduct
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateRequest"
+            example:
+              name: Яблоко зелёное
+              caloriesPer100g: 48
+              proteinsPer100g: 0.4
+              fatsPer100g: 0.2
+              carbohydratesPer100g: 12.5
+      responses:
+        "200":
+          description: Продукт успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags: [Products]
+      summary: Удалить продукт
+      description: Удаляет продукт текущего пользователя.
+      operationId: deleteProduct
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      responses:
+        "204":
+          description: Продукт успешно удалён
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Продукт нельзя удалить, так как он используется в дневнике питания
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: 409
+                error: CONFLICT
+                message: Продукт используется в записях дневника и не может быть удалён
+                timestamp: "2026-05-03T17:30:00"
+                path: /api/products/1
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/products/nutrition-lookup:
+    get:
+      tags: [Nutrition Lookup]
+      summary: Подтянуть БЖУ продукта по названию
+      description: >
+        AJAX-эндпоинт для формы создания продукта. Сервер ищет пищевую ценность
+        продукта через внешний API. Результат может кэшироваться в Redis по названию продукта.
+      operationId: lookupProductNutrition
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: Название продукта
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 255
+            example: banana
+      responses:
+        "200":
+          description: Данные о БЖУ найдены
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NutritionLookupResponse"
+              example:
+                name: banana
+                caloriesPer100g: 89
+                proteinsPer100g: 1.1
+                fatsPer100g: 0.3
+                carbohydratesPer100g: 22.8
+                source: EXTERNAL_API
+                cached: false
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Продукт не найден во внешнем API
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                status: 404
+                error: NOT_FOUND
+                message: Не удалось найти БЖУ для продукта
+                timestamp: "2026-05-03T17:30:00"
+                path: /api/products/nutrition-lookup
+        "502":
+          $ref: "#/components/responses/ExternalApiError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/diary:
+    get:
+      tags: [Diary]
+      summary: Получить дневник питания за дату
+      description: >
+        Возвращает записи дневника текущего пользователя за выбранный день,
+        суммарные калории и БЖУ, а также сравнение с дневной нормой пользователя.
+      operationId: getDiaryByDate
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: true
+          description: Дата дневника
+          schema:
+            type: string
+            format: date
+            example: "2026-05-03"
+      responses:
+        "200":
+          description: Дневник за дату успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiaryDayResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/diary/entries:
+    post:
+      tags: [Diary]
+      summary: Создать запись дневника питания
+      description: Калории и БЖУ рассчитываются сервером на основе продукта и количества граммов.
+      operationId: createFoodEntry
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoodEntryCreateRequest"
+            example:
+              entryDate: "2026-05-03"
+              mealType: BREAKFAST
+              productId: 1
+              grams: 150
+      responses:
+        "201":
+          description: Запись дневника успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodEntryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/diary/entries/{id}:
+    put:
+      tags: [Diary]
+      summary: Обновить запись дневника питания
+      description: Обновляет запись дневника текущего пользователя.
+      operationId: updateFoodEntry
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      parameters:
+        - $ref: "#/components/parameters/FoodEntryId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoodEntryUpdateRequest"
+            example:
+              entryDate: "2026-05-03"
+              mealType: LUNCH
+              productId: 1
+              grams: 200
+      responses:
+        "200":
+          description: Запись дневника успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodEntryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags: [Diary]
+      summary: Удалить запись дневника питания
+      description: Удаляет запись дневника текущего пользователя.
+      operationId: deleteFoodEntry
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      parameters:
+        - $ref: "#/components/parameters/FoodEntryId"
+      responses:
+        "204":
+          description: Запись дневника успешно удалена
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/diary/entries/calculate:
+    post:
+      tags: [Diary]
+      summary: Рассчитать БЖУ записи дневника
+      description: AJAX-эндпоинт для автоподсчёта калорий и БЖУ при вводе массы продукта.
+      operationId: calculateFoodEntryNutrition
+      security:
+        - sessionAuth: []
+          csrfAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoodEntryCalculationRequest"
+            example:
+              productId: 1
+              grams: 250
+      responses:
+        "200":
+          description: Значения успешно рассчитаны
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoodEntryCalculationResponse"
+              example:
+                grams: 250
+                calculatedCalories: 130
+                calculatedProteins: 0.75
+                calculatedFats: 0.5
+                calculatedCarbohydrates: 35
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/diary/entries/high-calorie:
+    get:
+      tags: [Diary]
+      summary: Получить наиболее калорийные записи за день
+      description: >
+        Возвращает записи текущего пользователя за выбранный день,
+        калорийность которых выше средней калорийности записей за этот день.
+        Этот эндпоинт соответствует запросу с подзапросом.
+      operationId: getHighCalorieEntries
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: true
+          description: Дата дневника
+          schema:
+            type: string
+            format: date
+            example: "2026-05-03"
+      responses:
+        "200":
+          description: Список записей успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FoodEntryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+      description: Авторизация через стандартную Spring Security session cookie.
+
+    csrfAuth:
+      type: apiKey
+      in: header
+      name: X-CSRF-TOKEN
+      description: CSRF-токен для изменяющих запросов.
+
+  parameters:
+    ProductId:
+      name: id
+      in: path
+      required: true
+      description: Идентификатор продукта
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        example: 1
+
+    FoodEntryId:
+      name: id
+      in: path
+      required: true
+      description: Идентификатор записи дневника
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+        example: 10
+
+  responses:
+    Unauthorized:
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 401
+            error: UNAUTHORIZED
+            message: Для выполнения запроса необходимо войти в систему
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products
+
+    Forbidden:
+      description: Недостаточно прав или попытка доступа к чужим данным
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 403
+            error: FORBIDDEN
+            message: У вас нет доступа к этому ресурсу
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products/1
+
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 404
+            error: NOT_FOUND
+            message: Ресурс не найден
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products/999
+
+    ValidationError:
+      description: Ошибка валидации входных данных
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
+          example:
+            status: 400
+            error: VALIDATION_ERROR
+            message: Некорректные данные запроса
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products
+            fieldErrors:
+              - field: name
+                message: Название продукта обязательно
+              - field: caloriesPer100g
+                message: Калорийность не может быть отрицательной
+
+    ExternalApiError:
+      description: Ошибка при обращении к внешнему API
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 502
+            error: EXTERNAL_API_ERROR
+            message: Внешний API пищевой ценности временно недоступен
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products/nutrition-lookup
+
+    InternalServerError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 500
+            error: INTERNAL_SERVER_ERROR
+            message: Внутренняя ошибка сервера
+            timestamp: "2026-05-03T17:30:00"
+            path: /api/products
+
+  schemas:
+    ProductCreateRequest:
+      type: object
+      required: [name, caloriesPer100g, proteinsPer100g, fatsPer100g, carbohydratesPer100g]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Название продукта
+          example: Яблоко
+        caloriesPer100g:
+          type: number
+          format: double
+          minimum: 0
+          description: Калорийность на 100 граммов
+          example: 52
+        proteinsPer100g:
+          type: number
+          format: double
+          minimum: 0
+          description: Белки на 100 граммов
+          example: 0.3
+        fatsPer100g:
+          type: number
+          format: double
+          minimum: 0
+          description: Жиры на 100 граммов
+          example: 0.2
+        carbohydratesPer100g:
+          type: number
+          format: double
+          minimum: 0
+          description: Углеводы на 100 граммов
+          example: 14
+
+    ProductUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/ProductCreateRequest"
+
+    ProductResponse:
+      type: object
+      required: [id, name, caloriesPer100g, proteinsPer100g, fatsPer100g, carbohydratesPer100g, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор продукта
+          example: 1
+        name:
+          type: string
+          description: Название продукта
+          example: Яблоко
+        caloriesPer100g:
+          type: number
+          format: double
+          description: Калорийность на 100 граммов
+          example: 52
+        proteinsPer100g:
+          type: number
+          format: double
+          description: Белки на 100 граммов
+          example: 0.3
+        fatsPer100g:
+          type: number
+          format: double
+          description: Жиры на 100 граммов
+          example: 0.2
+        carbohydratesPer100g:
+          type: number
+          format: double
+          description: Углеводы на 100 граммов
+          example: 14
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время создания продукта
+          example: "2026-05-03T17:30:00"
+
+    ProductShortResponse:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Яблоко
+
+    ProductPageResponse:
+      type: object
+      required: [content, page, size, totalElements, totalPages]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductResponse"
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 20
+        totalElements:
+          type: integer
+          format: int64
+          example: 42
+        totalPages:
+          type: integer
+          example: 3
+
+    NutritionLookupResponse:
+      type: object
+      required: [name, caloriesPer100g, proteinsPer100g, fatsPer100g, carbohydratesPer100g, source, cached]
+      properties:
+        name:
+          type: string
+          description: Название продукта, по которому выполнялся поиск
+          example: banana
+        caloriesPer100g:
+          type: number
+          format: double
+          example: 89
+        proteinsPer100g:
+          type: number
+          format: double
+          example: 1.1
+        fatsPer100g:
+          type: number
+          format: double
+          example: 0.3
+        carbohydratesPer100g:
+          type: number
+          format: double
+          example: 22.8
+        source:
+          type: string
+          description: Источник данных
+          enum: [EXTERNAL_API, CACHE]
+          example: EXTERNAL_API
+        cached:
+          type: boolean
+          description: Были ли данные получены из Redis-кэша
+          example: false
+
+    FoodEntryCreateRequest:
+      type: object
+      required: [entryDate, mealType, productId, grams]
+      properties:
+        entryDate:
+          type: string
+          format: date
+          description: Дата записи дневника
+          example: "2026-05-03"
+        mealType:
+          $ref: "#/components/schemas/MealType"
+        productId:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Идентификатор продукта
+          example: 1
+        grams:
+          type: number
+          format: double
+          minimum: 0.1
+          description: Масса продукта в граммах
+          example: 150
+
+    FoodEntryUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/FoodEntryCreateRequest"
+
+    FoodEntryCalculationRequest:
+      type: object
+      required: [productId, grams]
+      properties:
+        productId:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Идентификатор продукта
+          example: 1
+        grams:
+          type: number
+          format: double
+          minimum: 0.1
+          description: Масса продукта в граммах
+          example: 250
+
+    FoodEntryCalculationResponse:
+      type: object
+      required: [grams, calculatedCalories, calculatedProteins, calculatedFats, calculatedCarbohydrates]
+      properties:
+        grams:
+          type: number
+          format: double
+          example: 250
+        calculatedCalories:
+          type: number
+          format: double
+          example: 130
+        calculatedProteins:
+          type: number
+          format: double
+          example: 0.75
+        calculatedFats:
+          type: number
+          format: double
+          example: 0.5
+        calculatedCarbohydrates:
+          type: number
+          format: double
+          example: 35
+
+    FoodEntryResponse:
+      type: object
+      required:
+        - id
+        - entryDate
+        - mealType
+        - grams
+        - product
+        - calculatedCalories
+        - calculatedProteins
+        - calculatedFats
+        - calculatedCarbohydrates
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        entryDate:
+          type: string
+          format: date
+          example: "2026-05-03"
+        mealType:
+          $ref: "#/components/schemas/MealType"
+        grams:
+          type: number
+          format: double
+          example: 150
+        product:
+          $ref: "#/components/schemas/ProductShortResponse"
+        calculatedCalories:
+          type: number
+          format: double
+          example: 78
+        calculatedProteins:
+          type: number
+          format: double
+          example: 0.45
+        calculatedFats:
+          type: number
+          format: double
+          example: 0.3
+        calculatedCarbohydrates:
+          type: number
+          format: double
+          example: 21
+
+    DiaryDayResponse:
+      type: object
+      required: [date, entries, totals]
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2026-05-03"
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoodEntryResponse"
+        totals:
+          $ref: "#/components/schemas/DiaryTotalsResponse"
+        dailyNorm:
+          $ref: "#/components/schemas/DailyNormResponse"
+
+    DiaryTotalsResponse:
+      type: object
+      required: [calories, proteins, fats, carbohydrates]
+      properties:
+        calories:
+          type: number
+          format: double
+          example: 1850
+        proteins:
+          type: number
+          format: double
+          example: 110
+        fats:
+          type: number
+          format: double
+          example: 60
+        carbohydrates:
+          type: number
+          format: double
+          example: 220
+
+    DailyNormResponse:
+      type: object
+      description: Суточная норма пользователя, рассчитанная по профилю
+      required: [dailyCalories, dailyProteins, dailyFats, dailyCarbohydrates]
+      properties:
+        dailyCalories:
+          type: number
+          format: double
+          example: 2300
+        dailyProteins:
+          type: number
+          format: double
+          example: 140
+        dailyFats:
+          type: number
+          format: double
+          example: 70
+        dailyCarbohydrates:
+          type: number
+          format: double
+          example: 280
+
+    MealType:
+      type: string
+      description: Тип приёма пищи
+      enum: [BREAKFAST, LUNCH, DINNER, SNACK]
+      example: BREAKFAST
+
+    ErrorResponse:
+      type: object
+      required: [status, error, message, timestamp, path]
+      properties:
+        status:
+          type: integer
+          description: HTTP-статус ошибки
+          example: 404
+        error:
+          type: string
+          description: Код ошибки
+          example: NOT_FOUND
+        message:
+          type: string
+          description: Описание ошибки
+          example: Ресурс не найден
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки
+          example: "2026-05-03T17:30:00"
+        path:
+          type: string
+          description: Путь запроса
+          example: /api/products/999
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - type: object
+          required: [fieldErrors]
+          properties:
+            fieldErrors:
+              type: array
+              description: Список ошибок по конкретным полям
+              items:
+                $ref: "#/components/schemas/FieldError"
+
+    FieldError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          description: Название поля
+          example: caloriesPer100g
+        message:
+          type: string
+          description: Сообщение об ошибке
+          example: Калорийность не может быть отрицательной

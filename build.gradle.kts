@@ -1,10 +1,12 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
+    kotlin("jvm") version "2.3.21"
+    kotlin("plugin.spring") version "2.3.21"
+    kotlin("plugin.jpa") version "2.3.21"
+    kotlin("plugin.allopen") version "2.3.21"
+
     id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "2.2.21"
-    id("org.openapi.generator") version "7.10.0"
+    id("org.openapi.generator") version "7.22.0"
 }
 
 group = "ru.kuzdikenov"
@@ -22,32 +24,42 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-freemarker")
-    implementation("org.springframework.boot:spring-boot-starter-liquibase")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-starter-freemarker")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
+    implementation("org.springframework.boot:spring-boot-starter-webclient")
+
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.49")
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")
-    compileOnly("org.projectlombok:lombok")
+
     runtimeOnly("org.postgresql:postgresql")
-    annotationProcessor("org.projectlombok:lombok")
+
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-freemarker-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-liquibase-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-flyway-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testCompileOnly("org.projectlombok:lombok")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testAnnotationProcessor("org.projectlombok:lombok")
 }
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+        freeCompilerArgs.addAll(
+            "-Xjsr305=strict",
+            "-Xannotation-default-target=param-property"
+        )
     }
 }
 
@@ -61,12 +73,17 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-val openApiSpec = "$projectDir/src/main/resources/openapi.yaml"
-val openApiGeneratedDir: String = layout.buildDirectory.dir("generated/openapi").get().asFile.absolutePath
+val openApiSpec = "$projectDir/src/main/resources/openapi/openapi.yaml"
+val openApiGeneratedDir = layout.buildDirectory
+    .dir("generated/openapi")
+    .get()
+    .asFile
+    .absolutePath
 
 openApiGenerate {
     inputSpec.set(openApiSpec)
     outputDir.set(openApiGeneratedDir)
+
     generatorName.set("kotlin-spring")
     modelPackage.set("ru.kuzdikenov.api.dto")
     apiPackage.set("ru.kuzdikenov.api")
@@ -103,6 +120,10 @@ sourceSets {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    dependsOn(tasks.openApiGenerate)
+tasks.named("compileKotlin") {
+    dependsOn(tasks.named("openApiGenerate"))
+}
+
+tasks.named("compileTestKotlin") {
+    dependsOn(tasks.named("openApiGenerate"))
 }
