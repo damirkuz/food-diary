@@ -1,0 +1,3 @@
+insert into roles (name)
+values ('ROLE_USER'), ('ROLE_ADMIN')
+on conflict do nothing;

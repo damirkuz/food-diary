@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1f2937;
+    background: #f8fafc;
+}
+
+a {
+    color: #2563eb;
+}
+
+.site-header,
+.site-footer {
+    padding: 16px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.site-footer {
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 0;
+}
+
+.site-header nav {
+    display: flex;
+    gap: 16px;
+}
+
+.container {
+    width: min(960px, calc(100% - 32px));
+    margin: 32px auto;
+}
+
+.auth-page {
+    width: min(420px, 100%);
+}
+
+.auth-form {
+    display: grid;
+    gap: 16px;
+}
+
+.form-group {
+    display: grid;
+    gap: 6px;
+}
+
+input {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font: inherit;
+}
+
+button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 6px;
+    color: #ffffff;
+    background: #2563eb;
+    font: inherit;
+    cursor: pointer;
+}
+
+.field-error {
+    color: #b91c1c;
+    font-size: 14px;
+}

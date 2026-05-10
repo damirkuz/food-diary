@@ -3,11 +3,17 @@ services:
       image: postgres:17-alpine
       container_name: food-diary-db
       environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: food-diary-db
+        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
       ports:
-        - "5432:5432"
+        - "5433:5432"
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+        interval: 5s
+        timeout: 3s
+        retries: 20
+        start_period: 10s
       volumes:
         - postgres_data:/var/lib/postgresql/data
     redis:
@@ -15,3 +21,6 @@ services:
       container_name: food-diary-redis
       ports:
         - "6379:6379"
+
+volumes:
+  postgres_data:
