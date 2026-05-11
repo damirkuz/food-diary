@@ -11,6 +11,8 @@ import ru.kuzdikenov.api.dto.ProductUpdateRequest
 import ru.kuzdikenov.fooddiary.mapper.ProductMapper
 import ru.kuzdikenov.fooddiary.service.ProductService
 import ru.kuzdikenov.fooddiary.service.CurrentUserService
+import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
+import java.math.BigDecimal
 import java.net.URI
 
 @RestController
@@ -21,7 +23,7 @@ class ProductController(
 ) : ProductsApi {
     override fun createProduct(productCreateRequest: ProductCreateRequest): ResponseEntity<ProductResponse> {
         val ownerId = currentUserService.getCurrentUserId()
-        val product = productService.createProduct(productCreateRequest, ownerId)
+        val product = productService.createProduct(productCreateRequest.toCommand(), ownerId)
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -57,7 +59,27 @@ class ProductController(
         productUpdateRequest: ProductUpdateRequest
     ): ResponseEntity<ProductResponse> {
         val ownerId = currentUserService.getCurrentUserId()
-        val product = productService.updateProduct(id, ownerId, productUpdateRequest)
+        val product = productService.updateProduct(id, ownerId, productUpdateRequest.toCommand())
         return ResponseEntity.ok(productMapper.toResponse(product))
+    }
+
+    private fun ProductCreateRequest.toCommand(): ProductUpsertCommand {
+        return ProductUpsertCommand(
+            name = name,
+            caloriesPer100g = BigDecimal.valueOf(caloriesPer100g),
+            proteinsPer100g = BigDecimal.valueOf(proteinsPer100g),
+            fatsPer100g = BigDecimal.valueOf(fatsPer100g),
+            carbohydratesPer100g = BigDecimal.valueOf(carbohydratesPer100g)
+        )
+    }
+
+    private fun ProductUpdateRequest.toCommand(): ProductUpsertCommand {
+        return ProductUpsertCommand(
+            name = name,
+            caloriesPer100g = BigDecimal.valueOf(caloriesPer100g),
+            proteinsPer100g = BigDecimal.valueOf(proteinsPer100g),
+            fatsPer100g = BigDecimal.valueOf(fatsPer100g),
+            carbohydratesPer100g = BigDecimal.valueOf(carbohydratesPer100g)
+        )
     }
 }

@@ -6,8 +6,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.kuzdikenov.api.dto.ProductCreateRequest
-import ru.kuzdikenov.api.dto.ProductUpdateRequest
 import ru.kuzdikenov.fooddiary.entity.ProductEntity
 import ru.kuzdikenov.fooddiary.exception.ProductUsedInFoodEntriesException
 import ru.kuzdikenov.fooddiary.exception.ProductNotFoundException
@@ -15,7 +13,7 @@ import ru.kuzdikenov.fooddiary.exception.ProductSortException
 import ru.kuzdikenov.fooddiary.exception.UserNotFoundException
 import ru.kuzdikenov.fooddiary.repository.ProductRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
-import java.math.BigDecimal
+import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
 
 @Service
 class ProductService(
@@ -24,15 +22,15 @@ class ProductService(
 ) {
 
     @Transactional
-    fun createProduct(productCreateRequest: ProductCreateRequest, ownerId: Long): ProductEntity {
+    fun createProduct(command: ProductUpsertCommand, ownerId: Long): ProductEntity {
         val owner = userRepository.findById(ownerId).orElseThrow { UserNotFoundException() }
 
         val product = ProductEntity(
-            name = productCreateRequest.name,
-            caloriesPer100g = BigDecimal.valueOf(productCreateRequest.caloriesPer100g),
-            proteinsPer100g = BigDecimal.valueOf(productCreateRequest.proteinsPer100g),
-            fatsPer100g = BigDecimal.valueOf(productCreateRequest.fatsPer100g),
-            carbohydratesPer100g = BigDecimal.valueOf(productCreateRequest.carbohydratesPer100g),
+            name = command.name,
+            caloriesPer100g = command.caloriesPer100g,
+            proteinsPer100g = command.proteinsPer100g,
+            fatsPer100g = command.fatsPer100g,
+            carbohydratesPer100g = command.carbohydratesPer100g,
             owner = owner
         )
 
@@ -63,14 +61,14 @@ class ProductService(
     }
 
     @Transactional
-    fun updateProduct(id: Long, ownerId: Long, productUpdateRequest: ProductUpdateRequest): ProductEntity {
+    fun updateProduct(id: Long, ownerId: Long, command: ProductUpsertCommand): ProductEntity {
         val product = getProductForOwner(id, ownerId)
 
-        product.name = productUpdateRequest.name
-        product.caloriesPer100g = BigDecimal.valueOf(productUpdateRequest.caloriesPer100g)
-        product.proteinsPer100g = BigDecimal.valueOf(productUpdateRequest.proteinsPer100g)
-        product.fatsPer100g = BigDecimal.valueOf(productUpdateRequest.fatsPer100g)
-        product.carbohydratesPer100g = BigDecimal.valueOf(productUpdateRequest.carbohydratesPer100g)
+        product.name = command.name
+        product.caloriesPer100g = command.caloriesPer100g
+        product.proteinsPer100g = command.proteinsPer100g
+        product.fatsPer100g = command.fatsPer100g
+        product.carbohydratesPer100g = command.carbohydratesPer100g
 
         return productRepository.save(product)
     }

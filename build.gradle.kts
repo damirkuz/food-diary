@@ -7,6 +7,7 @@ plugins {
     id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.22.0"
+    id("org.flywaydb.flyway") version "12.5.0"
 }
 
 group = "ru.kuzdikenov"
@@ -22,6 +23,18 @@ java {
 repositories {
     mavenCentral()
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.flywaydb:flyway-database-postgresql:12.5.0")
+        classpath("org.postgresql:postgresql:42.7.7")
+    }
+}
+
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -71,6 +84,37 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+fun loadDotEnv(): Map<String, String> {
+    val envFile = rootProject.file(".env")
+
+    if (!envFile.exists()) {
+        return emptyMap()
+    }
+
+    return envFile.readLines()
+        .map(String::trim)
+        .filter { it.isNotEmpty() && !it.startsWith("#") && it.contains("=") }
+        .associate {
+            val index = it.indexOf("=")
+            it.substring(0, index) to it.substring(index + 1)
+        }
+}
+
+val dotEnv = loadDotEnv()
+
+fun envOrDotEnv(name: String): String {
+    return providers.environmentVariable(name).orNull ?: dotEnv[name].orEmpty()
+}
+
+flyway {
+    driver = "org.postgresql.Driver"
+    url = "jdbc:postgresql://localhost:5433/${envOrDotEnv("DB_NAME")}"
+    user = envOrDotEnv("DB_USER")
+    password = envOrDotEnv("DB_PASSWORD")
+    locations = arrayOf("filesystem:src/main/resources/db/migration")
+    cleanDisabled = true
 }
 
 val openApiSpec = "$projectDir/src/main/resources/openapi/openapi.yaml"

@@ -60,7 +60,7 @@ class ProductWebController(
         }
 
         val ownerId = currentUserService.getCurrentUserId()
-        productService.createProduct(form.toCreateRequest(), ownerId)
+        productService.createProduct(form.toCommand(), ownerId)
         redirectAttributes.addFlashAttribute("successMessage", "Продукт создан")
 
         return "redirect:/products"
@@ -93,7 +93,7 @@ class ProductWebController(
         }
 
         val ownerId = currentUserService.getCurrentUserId()
-        productService.updateProduct(id, ownerId, form.toUpdateRequest())
+        productService.updateProduct(id, ownerId, form.toCommand())
         redirectAttributes.addFlashAttribute("successMessage", "Продукт обновлён")
 
         return "redirect:/products"

@@ -197,12 +197,14 @@ button {
     width: min(720px, 100%);
 }
 
-.product-form {
+.product-form,
+.profile-form {
     display: grid;
     gap: 16px;
 }
 
-.nutrition-grid {
+.nutrition-grid,
+.profile-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
@@ -217,7 +219,8 @@ button {
 @media (max-width: 700px) {
     .page-header,
     .filter-form,
-    .nutrition-grid {
+    .nutrition-grid,
+    .profile-grid {
         grid-template-columns: 1fr;
     }
 

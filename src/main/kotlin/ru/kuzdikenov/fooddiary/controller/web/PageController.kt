@@ -10,9 +10,4 @@ class PageController {
     fun home(): String {
         return "home"
     }
-
-    @GetMapping("/profile")
-    fun profile(): String {
-        return "profile"
-    }
 }
