@@ -3,6 +3,7 @@
         <a href="/">Главная</a>
 
         <#if Session?? && Session.SPRING_SECURITY_CONTEXT??>
+            <a href="/products">Продукты</a>
             <a href="/profile">Профиль</a>
 
             <form method="post" action="/logout" class="logout-form">

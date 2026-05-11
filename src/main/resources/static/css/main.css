@@ -71,6 +71,14 @@ input {
     font: inherit;
 }
 
+select {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    font: inherit;
+}
+
 button {
     padding: 10px 14px;
     border: 0;
@@ -84,4 +92,136 @@ button {
 .field-error {
     color: #b91c1c;
     font-size: 14px;
+}
+
+.alert {
+    margin: 16px 0;
+    padding: 12px 14px;
+    border-radius: 6px;
+}
+
+.alert-success {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.alert-error {
+    color: #991b1b;
+    background: #fee2e2;
+}
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.page-header h1,
+.form-page h1 {
+    margin-top: 0;
+}
+
+.button-link {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 6px;
+    color: #ffffff;
+    background: #2563eb;
+    text-decoration: none;
+}
+
+.filter-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) auto;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.table-actions form {
+    margin: 0;
+}
+
+.danger-button {
+    background: #dc2626;
+}
+
+.empty-state {
+    padding: 24px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.form-page {
+    width: min(720px, 100%);
+}
+
+.product-form {
+    display: grid;
+    gap: 16px;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+@media (max-width: 700px) {
+    .page-header,
+    .filter-form,
+    .nutrition-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        display: grid;
+    }
 }
