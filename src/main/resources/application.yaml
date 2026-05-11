@@ -28,3 +28,13 @@ spring:
       datetime_format: iso
       date_format: iso
       time_format: iso
+
+provider:
+  open-food-facts:
+    base-url: https://world.openfoodfacts.org
+  usda:
+    base-url: https://api.nal.usda.gov
+    api-key: ${FOOD_DATA_SERVICE_API_KEY:}
+  my-memory-translate:
+    base-url: https://api.mymemory.translated.net
+

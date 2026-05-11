@@ -20,7 +20,11 @@ import java.time.ZoneOffset
 @RestControllerAdvice(basePackages = ["ru.kuzdikenov.fooddiary.controller.api"])
 class ApiExceptionHandler {
 
-    @ExceptionHandler(ProductNotFoundException::class, FoodEntryNotFoundException::class)
+    @ExceptionHandler(
+        ProductNotFoundException::class,
+        FoodEntryNotFoundException::class,
+        NutritionLookupNotFoundException::class
+    )
     fun handleNotFound(
         ex: RuntimeException,
         request: HttpServletRequest
@@ -34,6 +38,14 @@ class ApiExceptionHandler {
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
         return error(HttpStatus.CONFLICT, "CONFLICT", ex.message ?: "Продукт нельзя удалить", request)
+    }
+
+    @ExceptionHandler(ExternalNutritionLookupException::class)
+    fun handleExternalNutritionLookup(
+        ex: ExternalNutritionLookupException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        return error(HttpStatus.BAD_GATEWAY, "EXTERNAL_API_ERROR", ex.message ?: "Внешний API недоступен", request)
     }
 
     @ExceptionHandler(AccessDeniedException::class)
