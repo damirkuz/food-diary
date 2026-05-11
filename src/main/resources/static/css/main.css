@@ -23,7 +23,26 @@ a {
 
 .site-header nav {
     display: flex;
+    align-items: center;
     gap: 16px;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.link-button {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: #2563eb;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    text-decoration: underline;
 }
 
 .container {

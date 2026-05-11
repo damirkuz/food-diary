@@ -35,8 +35,6 @@ class AuthController (
         return "auth/register"
     }
 
-
-
     @PostMapping("/register")
     fun register(
         @Valid @ModelAttribute("form") form: RegisterForm,
