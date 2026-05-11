@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @Entity
@@ -37,8 +36,8 @@ class UserProfileEntity(
     @Column(name = "height_cm", nullable = false)
     var heightCm: Int,
 
-    @Column(name = "weight_kg", nullable = false, precision = 6, scale = 2)
-    var weightKg: BigDecimal,
+    @Column(name = "weight_kg", nullable = false)
+    var weightKg: Double,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_level", nullable = false, length = 32)

@@ -14,6 +14,7 @@ import ru.kuzdikenov.fooddiary.entity.Gender
 import ru.kuzdikenov.fooddiary.form.ProfileForm
 import ru.kuzdikenov.fooddiary.service.CurrentUserService
 import ru.kuzdikenov.fooddiary.service.GoalService
+import ru.kuzdikenov.fooddiary.service.NutritionNormService
 import ru.kuzdikenov.fooddiary.service.ProfileService
 
 @Controller
@@ -22,6 +23,7 @@ class ProfileWebController(
     private val profileService: ProfileService,
     private val currentUserService: CurrentUserService,
     private val goalService: GoalService,
+    private val nutritionNormService: NutritionNormService,
 ) {
 
     @GetMapping
@@ -31,6 +33,8 @@ class ProfileWebController(
         val ownerId = currentUserService.getCurrentUserId()
         val profile = profileService.findByUserId(ownerId)
         model.addAttribute("form", profile?.let { ProfileForm.fromProfile(it) } ?: ProfileForm())
+        val norm = profile?.let { nutritionNormService.calculate(it) }
+        model.addAttribute("nutritionNorm", norm)
         addConstants(model)
         return "profile"
     }

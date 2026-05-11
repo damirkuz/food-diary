@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import java.math.BigDecimal
 
 @Entity
 @Table(name = "goals")
@@ -21,17 +20,17 @@ class GoalEntity(
     @Column(nullable = false, unique = true, length = 50)
     var name: String,
 
-    @Column(name = "calories_modifier", nullable = false, precision = 5, scale = 3)
-    var caloriesModifier: BigDecimal,
+    @Column(name = "calories_modifier", nullable = false)
+    var caloriesModifier: Double,
 
-    @Column(name = "proteins_ratio", nullable = false, precision = 5, scale = 4)
-    var proteinsRatio: BigDecimal,
+    @Column(name = "proteins_ratio", nullable = false)
+    var proteinsRatio: Double,
 
-    @Column(name = "fats_ratio", nullable = false, precision = 5, scale = 4)
-    var fatsRatio: BigDecimal,
+    @Column(name = "fats_ratio", nullable = false)
+    var fatsRatio: Double,
 
-    @Column(name = "carbohydrates_ratio", nullable = false, precision = 5, scale = 4)
-    var carbohydratesRatio: BigDecimal,
+    @Column(name = "carbohydrates_ratio", nullable = false)
+    var carbohydratesRatio: Double,
 
     @OneToMany(
         mappedBy = "goal",

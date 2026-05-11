@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import ru.kuzdikenov.fooddiary.entity.ProductEntity
 import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
-import java.math.BigDecimal
 
 class ProductForm(
     @field:NotBlank(message = "Название продукта обязательно")
@@ -33,10 +32,10 @@ class ProductForm(
     fun toCommand(): ProductUpsertCommand {
         return ProductUpsertCommand(
             name = name,
-            caloriesPer100g = BigDecimal.valueOf(caloriesPer100g!!),
-            proteinsPer100g = BigDecimal.valueOf(proteinsPer100g!!),
-            fatsPer100g = BigDecimal.valueOf(fatsPer100g!!),
-            carbohydratesPer100g = BigDecimal.valueOf(carbohydratesPer100g!!)
+            caloriesPer100g = caloriesPer100g!!,
+            proteinsPer100g = proteinsPer100g!!,
+            fatsPer100g = fatsPer100g!!,
+            carbohydratesPer100g = carbohydratesPer100g!!
         )
     }
 
@@ -44,10 +43,10 @@ class ProductForm(
         fun fromProduct(product: ProductEntity): ProductForm {
             return ProductForm(
                 name = product.name,
-                caloriesPer100g = product.caloriesPer100g.toDouble(),
-                proteinsPer100g = product.proteinsPer100g.toDouble(),
-                fatsPer100g = product.fatsPer100g.toDouble(),
-                carbohydratesPer100g = product.carbohydratesPer100g.toDouble()
+                caloriesPer100g = product.caloriesPer100g,
+                proteinsPer100g = product.proteinsPer100g,
+                fatsPer100g = product.fatsPer100g,
+                carbohydratesPer100g = product.carbohydratesPer100g
             )
         }
     }

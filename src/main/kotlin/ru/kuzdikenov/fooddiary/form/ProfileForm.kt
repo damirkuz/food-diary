@@ -9,7 +9,6 @@ import ru.kuzdikenov.fooddiary.entity.ActivityLevel
 import ru.kuzdikenov.fooddiary.entity.Gender
 import ru.kuzdikenov.fooddiary.entity.UserProfileEntity
 import ru.kuzdikenov.fooddiary.service.command.ProfileUpsertCommand
-import java.math.BigDecimal
 import java.time.LocalDate
 
 class ProfileForm(
@@ -40,7 +39,7 @@ class ProfileForm(
             gender = gender!!,
             birthDate = birthDate!!,
             heightCm = heightCm!!,
-            weightKg = BigDecimal.valueOf(weightKg!!),
+            weightKg = weightKg!!,
             activityLevel = activityLevel!!,
             goalId = goalId!!
         )
@@ -52,7 +51,7 @@ class ProfileForm(
                 gender = profile.gender,
                 birthDate = profile.birthDate,
                 heightCm = profile.heightCm,
-                weightKg = profile.weightKg.toDouble(),
+                weightKg = profile.weightKg,
                 activityLevel = profile.activityLevel,
                 goalId = profile.goal.id
             )

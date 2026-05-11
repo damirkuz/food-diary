@@ -10,6 +10,34 @@
             <div class="alert alert-success">${successMessage}</div>
         </#if>
 
+        <#if nutritionNorm??>
+            <section class="nutrition-summary">
+                <h2>Суточная норма</h2>
+                <dl class="nutrition-summary-grid">
+                    <div>
+                        <dt>Возраст</dt>
+                        <dd>${nutritionNorm.age}</dd>
+                    </div>
+                    <div>
+                        <dt>Калории</dt>
+                        <dd>${nutritionNorm.calories} ккал</dd>
+                    </div>
+                    <div>
+                        <dt>Белки</dt>
+                        <dd>${nutritionNorm.proteins} г</dd>
+                    </div>
+                    <div>
+                        <dt>Жиры</dt>
+                        <dd>${nutritionNorm.fats} г</dd>
+                    </div>
+                    <div>
+                        <dt>Углеводы</dt>
+                        <dd>${nutritionNorm.carbohydrates} г</dd>
+                    </div>
+                </dl>
+            </section>
+        </#if>
+
         <form method="post" action="/profile" class="profile-form">
             <#include "/layout/csrf.ftlh">
 

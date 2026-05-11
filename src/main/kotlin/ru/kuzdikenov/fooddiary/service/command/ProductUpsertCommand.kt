@@ -1,11 +1,9 @@
 package ru.kuzdikenov.fooddiary.service.command
 
-import java.math.BigDecimal
-
 data class ProductUpsertCommand(
     val name: String,
-    val caloriesPer100g: BigDecimal,
-    val proteinsPer100g: BigDecimal,
-    val fatsPer100g: BigDecimal,
-    val carbohydratesPer100g: BigDecimal,
+    val caloriesPer100g: Double,
+    val proteinsPer100g: Double,
+    val fatsPer100g: Double,
+    val carbohydratesPer100g: Double,
 )

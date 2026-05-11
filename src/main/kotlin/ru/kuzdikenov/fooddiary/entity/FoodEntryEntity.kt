@@ -11,7 +11,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @Entity
@@ -29,20 +28,20 @@ class FoodEntryEntity(
     @Column(name = "meal_type", nullable = false, length = 32)
     var mealType: MealType,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var grams: BigDecimal,
+    @Column(nullable = false)
+    var grams: Double,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var calories: BigDecimal,
+    @Column(nullable = false)
+    var calories: Double,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var proteins: BigDecimal,
+    @Column(nullable = false)
+    var proteins: Double,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var fats: BigDecimal,
+    @Column(nullable = false)
+    var fats: Double,
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    var carbohydrates: BigDecimal,
+    @Column(nullable = false)
+    var carbohydrates: Double,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

@@ -203,6 +203,36 @@ button {
     gap: 16px;
 }
 
+.nutrition-summary {
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.nutrition-summary h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+}
+
+.nutrition-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.nutrition-summary-grid dt {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.nutrition-summary-grid dd {
+    margin: 4px 0 0;
+    font-weight: 700;
+}
+
 .nutrition-grid,
 .profile-grid {
     display: grid;
@@ -219,6 +249,7 @@ button {
 @media (max-width: 700px) {
     .page-header,
     .filter-form,
+    .nutrition-summary-grid,
     .nutrition-grid,
     .profile-grid {
         grid-template-columns: 1fr;

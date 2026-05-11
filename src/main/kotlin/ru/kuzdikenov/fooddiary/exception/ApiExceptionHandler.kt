@@ -20,9 +20,9 @@ import java.time.ZoneOffset
 @RestControllerAdvice(basePackages = ["ru.kuzdikenov.fooddiary.controller.api"])
 class ApiExceptionHandler {
 
-    @ExceptionHandler(ProductNotFoundException::class)
-    fun handleProductNotFound(
-        ex: ProductNotFoundException,
+    @ExceptionHandler(ProductNotFoundException::class, FoodEntryNotFoundException::class)
+    fun handleNotFound(
+        ex: RuntimeException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
         return error(HttpStatus.NOT_FOUND, "NOT_FOUND", ex.message ?: "Ресурс не найден", request)
