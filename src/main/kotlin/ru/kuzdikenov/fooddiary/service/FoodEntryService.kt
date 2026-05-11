@@ -73,6 +73,11 @@ class FoodEntryService (
     }
 
     @Transactional(readOnly = true)
+    fun getFoodEntryById(id: Long, ownerId: Long): FoodEntryEntity {
+        return getFoodEntryForOwner(id, ownerId)
+    }
+
+    @Transactional(readOnly = true)
     fun getTotalsByDate(ownerId: Long, entryDate: LocalDate): DiaryTotals {
         return foodEntryRepository.sumNutritionByUserIdAndEntryDate(ownerId, entryDate)
     }
@@ -88,7 +93,7 @@ class FoodEntryService (
     }
 
     private fun getFoodEntryForOwner(id: Long, ownerId: Long): FoodEntryEntity {
-        val foodEntry = foodEntryRepository.findById(id).orElseThrow { FoodEntryNotFoundException() }
+        val foodEntry = foodEntryRepository.findWithProductById(id) ?: throw FoodEntryNotFoundException()
         val foodEntryOwnerId = foodEntry.user.id ?: throw UserNotFoundException()
 
         if (foodEntryOwnerId != ownerId) {

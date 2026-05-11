@@ -11,6 +11,9 @@ import java.time.LocalDate
 interface FoodEntryRepository : JpaRepository<FoodEntryEntity, Long> {
 
     @EntityGraph(attributePaths = ["product"])
+    fun findWithProductById(id: Long): FoodEntryEntity?
+
+    @EntityGraph(attributePaths = ["product"])
     fun findAllByUserIdAndEntryDateOrderByMealTypeAscCreatedAtAsc(
         userId: Long,
         entryDate: LocalDate

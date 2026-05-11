@@ -4,6 +4,7 @@
 
         <#if Session?? && Session.SPRING_SECURITY_CONTEXT??>
             <a href="/products">Продукты</a>
+            <a href="/diary">Дневник</a>
             <a href="/profile">Профиль</a>
 
             <form method="post" action="/logout" class="logout-form">
