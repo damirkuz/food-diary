@@ -6,12 +6,9 @@ import org.springframework.transaction.annotation.Transactional
 import ru.kuzdikenov.fooddiary.dto.DiaryTotals
 import ru.kuzdikenov.fooddiary.dto.FoodEntryCalculation
 import ru.kuzdikenov.fooddiary.entity.FoodEntryEntity
-import ru.kuzdikenov.fooddiary.entity.ProductEntity
 import ru.kuzdikenov.fooddiary.exception.FoodEntryNotFoundException
-import ru.kuzdikenov.fooddiary.exception.ProductNotFoundException
 import ru.kuzdikenov.fooddiary.exception.UserNotFoundException
 import ru.kuzdikenov.fooddiary.repository.FoodEntryRepository
-import ru.kuzdikenov.fooddiary.repository.ProductRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 import ru.kuzdikenov.fooddiary.service.command.FoodEntryUpsertCommand
 import java.time.LocalDate
@@ -20,14 +17,14 @@ import java.time.LocalDate
 class FoodEntryService (
     private val foodEntryRepository: FoodEntryRepository,
     private val userRepository: UserRepository,
-    private val productRepository: ProductRepository,
+    private val productDomainService: ProductDomainService,
 ) {
 
     @Transactional
     fun createFoodEntry(command: FoodEntryUpsertCommand, ownerId: Long): FoodEntryEntity {
         val user = userRepository.findById(ownerId).orElseThrow { UserNotFoundException() }
-        val product = getProductForOwner(command.productId, ownerId)
-        val foodEntryCalculation = calculateNutrition(product, command.grams)
+        val product = productDomainService.getAccessibleProduct(command.productId, ownerId)
+        val foodEntryCalculation = productDomainService.calculateNutrition(product, command.grams)
 
         return foodEntryRepository.save(
             FoodEntryEntity(
@@ -47,8 +44,8 @@ class FoodEntryService (
     @Transactional
     fun updateFoodEntry(id: Long, command: FoodEntryUpsertCommand, ownerId: Long): FoodEntryEntity {
         val foodEntry = getFoodEntryForOwner(id, ownerId)
-        val product = getProductForOwner(command.productId, ownerId)
-        val foodEntryCalculation = calculateNutrition(product, command.grams)
+        val product = productDomainService.getAccessibleProduct(command.productId, ownerId)
+        val foodEntryCalculation = productDomainService.calculateNutrition(product, command.grams)
 
         foodEntry.entryDate = command.entryDate
         foodEntry.mealType = command.mealType
@@ -89,7 +86,10 @@ class FoodEntryService (
 
     @Transactional(readOnly = true)
     fun calculateFoodEntryNutrition(productId: Long, grams: Double, ownerId: Long): FoodEntryCalculation {
-        return calculateNutrition(getProductForOwner(productId, ownerId), grams)
+        return productDomainService.calculateNutrition(
+            productDomainService.getAccessibleProduct(productId, ownerId),
+            grams
+        )
     }
 
     private fun getFoodEntryForOwner(id: Long, ownerId: Long): FoodEntryEntity {
@@ -101,27 +101,5 @@ class FoodEntryService (
         }
 
         return foodEntry
-    }
-
-    private fun getProductForOwner(id: Long, ownerId: Long): ProductEntity {
-        val product = productRepository.findById(id).orElseThrow { ProductNotFoundException() }
-        val productOwnerId = product.owner.id ?: throw UserNotFoundException()
-
-        if (productOwnerId != ownerId) {
-            throw AccessDeniedException("User has no access to this product")
-        }
-
-        return product
-    }
-
-    private fun calculateNutrition(product: ProductEntity, grams: Double): FoodEntryCalculation {
-        val multiplier = grams / 100.0
-        return FoodEntryCalculation(
-            grams = grams,
-            calculatedCalories = product.caloriesPer100g * multiplier,
-            calculatedProteins = product.proteinsPer100g * multiplier,
-            calculatedFats = product.fatsPer100g * multiplier,
-            calculatedCarbohydrates = product.carbohydratesPer100g * multiplier,
-        )
     }
 }

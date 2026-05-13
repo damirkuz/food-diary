@@ -1,4 +1,27 @@
 services:
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: food-diary-app
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+        SPRING_DATASOURCE_USERNAME: ${DB_USER}
+        SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+        SPRING_DATA_REDIS_HOST: redis
+        SPRING_DATA_REDIS_PORT: 6379
+        FOOD_DATA_SERVICE_API_KEY: ${FOOD_DATA_SERVICE_API_KEY:-}
+        APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-}
+        APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:-}
+        USDA_ENABLED: ${USDA_ENABLED:-true}
+        OPEN_FOOD_FACTS_ENABLED: ${OPEN_FOOD_FACTS_ENABLED:-false}
+      ports:
+        - "8080:8080"
+      depends_on:
+        db:
+          condition: service_healthy
+        redis:
+          condition: service_started
     db:
       image: postgres:17-alpine
       container_name: food-diary-db
@@ -21,6 +44,11 @@ services:
       container_name: food-diary-redis
       ports:
         - "6379:6379"
+      healthcheck:
+        test: [ "CMD", "redis-cli", "ping" ]
+        interval: 5s
+        timeout: 3s
+        retries: 20
 
 volumes:
   postgres_data:

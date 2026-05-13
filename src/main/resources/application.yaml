@@ -36,11 +36,16 @@ spring:
 provider:
   open-food-facts:
     base-url: https://world.openfoodfacts.org
+    enabled: ${OPEN_FOOD_FACTS_ENABLED:false}
   usda:
     base-url: https://api.nal.usda.gov
     api-key: ${FOOD_DATA_SERVICE_API_KEY:}
+    enabled: ${USDA_ENABLED:true}
   my-memory-translate:
     base-url: https://api.mymemory.translated.net
 
 app:
   nutrition-lookup-cache-duration-days: 7
+  admin:
+    email: ${APP_ADMIN_EMAIL:}
+    password: ${APP_ADMIN_PASSWORD:}

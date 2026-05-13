@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.slf4j.LoggerFactory
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -29,6 +30,7 @@ class ApiExceptionHandler {
         ex: RuntimeException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
+        logger.warn("API resource not found at {}: {}", request.requestURI, ex.message)
         return error(HttpStatus.NOT_FOUND, "NOT_FOUND", ex.message ?: "Ресурс не найден", request)
     }
 
@@ -37,6 +39,7 @@ class ApiExceptionHandler {
         ex: ProductUsedInFoodEntriesException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
+        logger.warn("API product conflict at {}: {}", request.requestURI, ex.message)
         return error(HttpStatus.CONFLICT, "CONFLICT", ex.message ?: "Продукт нельзя удалить", request)
     }
 
@@ -45,6 +48,7 @@ class ApiExceptionHandler {
         ex: ExternalNutritionLookupException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
+        logger.warn("API external nutrition lookup failed at {}: {}", request.requestURI, ex.message)
         return error(HttpStatus.BAD_GATEWAY, "EXTERNAL_API_ERROR", ex.message ?: "Внешний API недоступен", request)
     }
 
@@ -53,6 +57,7 @@ class ApiExceptionHandler {
         ex: AccessDeniedException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
+        logger.warn("API access denied at {}: {}", request.requestURI, ex.message)
         return error(HttpStatus.FORBIDDEN, "FORBIDDEN", ex.message ?: "У вас нет доступа к этому ресурсу", request)
     }
 
@@ -61,6 +66,7 @@ class ApiExceptionHandler {
         ex: MethodArgumentNotValidException,
         request: HttpServletRequest
     ): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("API validation failed at {}: {}", request.requestURI, ex.message)
         val fieldErrors = ex.bindingResult.fieldErrors.map {
             FieldError(
                 field = it.field,
@@ -87,6 +93,7 @@ class ApiExceptionHandler {
         ex: ConstraintViolationException,
         request: HttpServletRequest
     ): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("API constraint violation at {}: {}", request.requestURI, ex.message)
         val fieldErrors = ex.constraintViolations.map {
             FieldError(
                 field = it.propertyPath.toString(),
@@ -113,6 +120,7 @@ class ApiExceptionHandler {
         ex: ProductSortException,
         request: HttpServletRequest
     ): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("API product sort rejected at {}: {}", request.requestURI, ex.message)
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
@@ -149,5 +157,9 @@ class ApiExceptionHandler {
                     path = request.requestURI
                 )
             )
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
     }
 }

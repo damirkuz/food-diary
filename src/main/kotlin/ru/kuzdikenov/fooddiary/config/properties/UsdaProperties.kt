@@ -7,4 +7,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class UsdaProperties(
     val baseUrl: String,
     val apiKey: String = "",
+    val enabled: Boolean = true,
 )

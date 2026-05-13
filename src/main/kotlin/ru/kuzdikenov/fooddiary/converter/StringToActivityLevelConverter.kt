@@ -8,8 +8,10 @@ import ru.kuzdikenov.fooddiary.entity.ActivityLevel
 class StringToActivityLevelConverter : Converter<String, ActivityLevel> {
 
     override fun convert(source: String): ActivityLevel {
+        val normalized = source.trim()
+
         return ActivityLevel.entries.firstOrNull {
-            it.name.equals(source.trim(), ignoreCase = true)
+            it.name.equals(normalized, ignoreCase = true)
         } ?: throw IllegalArgumentException("Unknown activity level: $source")
     }
 }

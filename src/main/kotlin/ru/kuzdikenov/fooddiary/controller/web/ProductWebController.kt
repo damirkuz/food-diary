@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import ru.kuzdikenov.fooddiary.exception.ProductUsedInFoodEntriesException
 import ru.kuzdikenov.fooddiary.form.ProductForm
-import ru.kuzdikenov.fooddiary.mapper.ProductMapper
 import ru.kuzdikenov.fooddiary.service.CurrentUserService
 import ru.kuzdikenov.fooddiary.service.ProductService
 
@@ -22,7 +21,6 @@ import ru.kuzdikenov.fooddiary.service.ProductService
 class ProductWebController(
     private val productService: ProductService,
     private val currentUserService: CurrentUserService,
-    private val productMapper: ProductMapper,
 ) {
 
     @GetMapping
@@ -36,7 +34,7 @@ class ProductWebController(
         val ownerId = currentUserService.getCurrentUserId()
         val products = productService.getCurrentUserProducts(ownerId, search, page, size, sort)
 
-        model.addAttribute("products", products.map(productMapper::toResponse))
+        model.addAttribute("products", products)
         model.addAttribute("search", search ?: "")
         model.addAttribute("sort", sort)
 
@@ -47,6 +45,18 @@ class ProductWebController(
     fun newProduct(model: Model): String {
         model.addAttribute("form", ProductForm())
         return "products/new"
+    }
+
+    @GetMapping("/{id}")
+    fun show(
+        @PathVariable id: Long,
+        model: Model
+    ): String {
+        val ownerId = currentUserService.getCurrentUserId()
+        val product = productService.getProductById(id, ownerId)
+
+        model.addAttribute("product", product)
+        return "products/show"
     }
 
     @PostMapping

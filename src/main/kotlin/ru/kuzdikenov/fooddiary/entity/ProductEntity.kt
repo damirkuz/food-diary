@@ -34,6 +34,9 @@ class ProductEntity(
     @Column(name = "carbohydrates_per_100g", nullable = false)
     var carbohydratesPer100g: Double,
 
+    @Column(name = "is_public", nullable = false)
+    var isPublic: Boolean = false,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     var owner: UserEntity,

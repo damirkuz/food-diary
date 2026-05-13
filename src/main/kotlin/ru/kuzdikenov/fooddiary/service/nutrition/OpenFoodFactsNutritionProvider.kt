@@ -2,6 +2,7 @@ package ru.kuzdikenov.fooddiary.service.nutrition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -13,7 +14,8 @@ import ru.kuzdikenov.fooddiary.dto.ProductLookup
 import ru.kuzdikenov.fooddiary.exception.ExternalNutritionLookupException
 
 @Component
-@Order(1)
+@Order(2)
+@ConditionalOnProperty(prefix = "provider.open-food-facts", name = ["enabled"], havingValue = "true")
 class OpenFoodFactsNutritionProvider(
     @Qualifier("externalRestClientBuilder")
     restClientBuilder: RestClient.Builder,

@@ -1,6 +1,7 @@
 package ru.kuzdikenov.fooddiary.service.nutrition
 
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -12,7 +13,8 @@ import ru.kuzdikenov.fooddiary.dto.ProductLookup
 import ru.kuzdikenov.fooddiary.exception.ExternalNutritionLookupException
 
 @Component
-@Order(2)
+@Order(1)
+@ConditionalOnProperty(prefix = "provider.usda", name = ["enabled"], havingValue = "true", matchIfMissing = true)
 class UsdaNutritionProvider(
     @Qualifier("externalRestClientBuilder")
     restClientBuilder: RestClient.Builder,
