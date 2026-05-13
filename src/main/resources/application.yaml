@@ -6,6 +6,10 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   datasource:
     url: jdbc:postgresql://localhost:5433/${DB_NAME}
@@ -38,3 +42,5 @@ provider:
   my-memory-translate:
     base-url: https://api.mymemory.translated.net
 
+app:
+  nutrition-lookup-cache-duration-days: 7

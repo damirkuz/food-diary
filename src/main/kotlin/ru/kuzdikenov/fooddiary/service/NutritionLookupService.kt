@@ -10,6 +10,7 @@ import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
 class NutritionLookupService(
     private val lookupProviders: List<NutritionProvider>,
     private val productSearchQueryService: ProductSearchQueryService,
+    private val productLookupCacheService: ProductLookupCacheService,
 ) {
 
     fun lookupProductNutrition(name: String): ProductLookup {
@@ -18,9 +19,14 @@ class NutritionLookupService(
         val queries = productSearchQueryService.buildQueries(name)
 
         queries.forEach { query ->
+            productLookupCacheService.get(query)?.let { return it }
+
             lookupProviders.forEach { provider ->
                 try {
-                    provider.lookup(query)?.let { return it }
+                    provider.lookup(query)?.let {
+                        productLookupCacheService.put(query, it)
+                        return it.copy(cached = false)
+                    }
                 } catch (ex: ExternalNutritionLookupException) {
                     externalFailure = true
                 }
