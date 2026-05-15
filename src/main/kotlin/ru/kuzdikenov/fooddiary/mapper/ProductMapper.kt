@@ -23,6 +23,7 @@ class ProductMapper {
             proteinsPer100g = entity.proteinsPer100g,
             fatsPer100g = entity.fatsPer100g,
             carbohydratesPer100g = entity.carbohydratesPer100g,
+            isPublic = entity.isPublic,
             createdAt = entity.createdAt.toOffsetDateTimeUtc()
         )
     }

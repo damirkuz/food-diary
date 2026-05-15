@@ -55,6 +55,85 @@ X-CSRF-TOKEN: {{csrf}}
 GET http://localhost:8080/api/products/nutrition-lookup?name=banana
 Accept: application/json
 
-### 8. Delete product
+### 8. Calculate diary entry nutrition through AJAX API
+POST http://localhost:8080/api/diary/entries/calculate
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "productId": {{productId}},
+  "grams": 250
+}
+
+### 9. Create diary entry
+POST http://localhost:8080/api/diary/entries
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "entryDate": "2026-05-15",
+  "mealType": "BREAKFAST",
+  "productId": {{productId}},
+  "grams": 150
+}
+
+> {%
+    client.global.set("entryId", response.body.id);
+%}
+
+### 10. Get diary by date
+GET http://localhost:8080/api/diary?date=2026-05-15
+Accept: application/json
+
+### 11. Get high-calorie entries with JPQL subquery
+GET http://localhost:8080/api/diary/entries/high-calorie?date=2026-05-15
+Accept: application/json
+
+### 12. Update diary entry
+PUT http://localhost:8080/api/diary/entries/{{entryId}}
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "entryDate": "2026-05-15",
+  "mealType": "LUNCH",
+  "productId": {{productId}},
+  "grams": 200
+}
+
+### 13. Delete diary entry
+DELETE http://localhost:8080/api/diary/entries/{{entryId}}
+X-CSRF-TOKEN: {{csrf}}
+
+### 14. Validation error example
+POST http://localhost:8080/api/products
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "name": "",
+  "caloriesPer100g": -1,
+  "proteinsPer100g": 0,
+  "fatsPer100g": 0,
+  "carbohydratesPer100g": 0
+}
+
+### 15. CSRF error example
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Без CSRF",
+  "caloriesPer100g": 1,
+  "proteinsPer100g": 0,
+  "fatsPer100g": 0,
+  "carbohydratesPer100g": 0
+}
+
+### 16. Not found example
+GET http://localhost:8080/api/products/999999
+Accept: application/json
+
+### 17. Delete product
 DELETE http://localhost:8080/api/products/{{productId}}
 X-CSRF-TOKEN: {{csrf}}

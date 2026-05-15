@@ -22,7 +22,7 @@ paths:
     get:
       tags: [Products]
       summary: Получить список продуктов текущего пользователя
-      description: Возвращает продукты, созданные текущим авторизованным пользователем.
+      description: Возвращает продукты, созданные текущим авторизованным пользователем, и общие продукты из базового справочника.
       operationId: getCurrentUserProducts
       security:
         - sessionAuth: []
@@ -643,7 +643,7 @@ components:
 
     ProductResponse:
       type: object
-      required: [id, name, caloriesPer100g, proteinsPer100g, fatsPer100g, carbohydratesPer100g, createdAt]
+      required: [id, name, caloriesPer100g, proteinsPer100g, fatsPer100g, carbohydratesPer100g, isPublic, createdAt]
       properties:
         id:
           type: integer
@@ -674,6 +674,10 @@ components:
           format: double
           description: Углеводы на 100 граммов
           example: 14
+        isPublic:
+          type: boolean
+          description: Продукт доступен всем пользователям как часть общего справочника
+          example: true
         createdAt:
           type: string
           format: date-time

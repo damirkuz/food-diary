@@ -8,6 +8,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.22.0"
     id("org.flywaydb.flyway") version "12.5.0"
+    jacoco
 }
 
 group = "ru.kuzdikenov"
@@ -85,6 +86,38 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude(
+                    "**/FoodDiaryApplicationKt.class",
+                    "**/dto/**",
+                    "**/entity/**",
+                    "**/form/**",
+                    "**/config/properties/**",
+                    "**/service/nutrition/**",
+                    "**/service/translate/**",
+                    "**/ru/kuzdikenov/api/**"
+                )
+            }
+        })
+    )
 }
 
 fun loadDotEnv(): Map<String, String> {
