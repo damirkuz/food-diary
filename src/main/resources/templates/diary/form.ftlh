@@ -2,20 +2,21 @@
 <#import "/spring.ftl" as spring>
 
 <#macro foodEntryForm action submitText>
-    <form method="post" action="${action}" class="food-entry-form" data-food-entry-form>
+    <form method="post" action="${action}" class="d-grid gap-3" data-food-entry-form>
         <#include "/layout/csrf.ftlh">
 
-        <div class="form-group">
-            <label for="entryDate">Дата</label>
+        <div>
+            <label class="form-label" for="entryDate">Дата</label>
             <@spring.bind "form.entryDate" />
-            <input id="entryDate" type="date" name="entryDate" value="${(form.entryDate.toString())!}" required>
+            <input class="form-control" id="entryDate" type="date" name="entryDate"
+                   value="${(form.entryDate.toString())!}" required>
             <@errors.field "form.entryDate" />
         </div>
 
-        <div class="form-group">
-            <label for="mealType">Приём пищи</label>
+        <div>
+            <label class="form-label" for="mealType">Приём пищи</label>
             <@spring.bind "form.mealType" />
-            <select id="mealType" name="mealType" required>
+            <select class="form-select" id="mealType" name="mealType" required>
                 <option value="">Выберите приём пищи</option>
                 <#list mealTypes as mealType>
                     <option value="${mealType.name()}" <#if spring.status.value?? && spring.status.value?string == mealType.name()>selected</#if>>
@@ -31,10 +32,10 @@
             <@errors.field "form.mealType" />
         </div>
 
-        <div class="form-group">
-            <label for="productId">Продукт</label>
+        <div>
+            <label class="form-label" for="productId">Продукт</label>
             <@spring.bind "form.productId" />
-            <select id="productId" name="productId" required data-product-id>
+            <select class="form-select" id="productId" name="productId" required data-product-id>
                 <option value="">Выберите продукт</option>
                 <#list products as product>
                     <option value="${product.id}" <#if spring.status.value?? && spring.status.value?string == product.id?string>selected</#if>>
@@ -45,40 +46,49 @@
             <@errors.field "form.productId" />
         </div>
 
-        <div class="form-group">
-            <label for="grams">Масса, г</label>
+        <div>
+            <label class="form-label" for="grams">Масса, г</label>
             <@spring.bind "form.grams" />
-            <input id="grams" type="number" name="grams" value="${spring.status.value!}" min="0.1" step="0.1" required data-grams>
+            <input class="form-control" id="grams" type="number" name="grams" value="${spring.status.value!}"
+                   min="0.1" step="0.1" required data-grams>
             <@errors.field "form.grams" />
         </div>
 
-        <section class="nutrition-preview" data-nutrition-preview hidden>
-            <h2>Предварительный расчёт</h2>
-            <dl class="nutrition-summary-grid">
-                <div>
-                    <dt>Калории</dt>
-                    <dd><span data-preview-calories>0</span> ккал</dd>
+        <section class="nutrition-preview app-panel" data-nutrition-preview hidden>
+            <h2 class="h5 mb-3">Предварительный расчёт</h2>
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="preview-item">
+                        <span>Калории</span>
+                        <strong><span data-preview-calories>0</span> ккал</strong>
+                    </div>
                 </div>
-                <div>
-                    <dt>Белки</dt>
-                    <dd><span data-preview-proteins>0</span> г</dd>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="preview-item">
+                        <span>Белки</span>
+                        <strong><span data-preview-proteins>0</span> г</strong>
+                    </div>
                 </div>
-                <div>
-                    <dt>Жиры</dt>
-                    <dd><span data-preview-fats>0</span> г</dd>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="preview-item">
+                        <span>Жиры</span>
+                        <strong><span data-preview-fats>0</span> г</strong>
+                    </div>
                 </div>
-                <div>
-                    <dt>Углеводы</dt>
-                    <dd><span data-preview-carbohydrates>0</span> г</dd>
+                <div class="col-sm-6 col-lg-3">
+                    <div class="preview-item">
+                        <span>Углеводы</span>
+                        <strong><span data-preview-carbohydrates>0</span> г</strong>
+                    </div>
                 </div>
-            </dl>
+            </div>
         </section>
 
-        <p class="field-error" data-calculation-error hidden></p>
+        <p class="text-danger small mb-0" data-calculation-error hidden></p>
 
-        <div class="form-actions">
-            <button type="submit">${submitText}</button>
-            <a href="/diary?date=${(form.entryDate.toString())!}">Отмена</a>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-primary" type="submit">${submitText}</button>
+            <a class="btn btn-link" href="/diary?date=${(form.entryDate.toString())!}">Отмена</a>
         </div>
     </form>
 

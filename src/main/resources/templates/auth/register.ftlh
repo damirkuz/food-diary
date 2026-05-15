@@ -3,49 +3,55 @@
 <#import "/spring.ftl" as spring>
 
 <@layout.page title="Регистрация">
-    <section class="auth-page">
-        <h1>Регистрация</h1>
-
-        <form method="post" action="/register" class="auth-form">
-            <#include "/layout/csrf.ftlh">
-
-            <div class="form-group">
-                <label for="email">Email</label>
-
-                <@spring.bind "form.email" />
-                <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value="${spring.status.value!}"
-                        required
-                        maxlength="254"
-                >
-
-                <@errors.field "form.email" />
+    <section class="auth-shell">
+        <div class="auth-card">
+            <div class="mb-4">
+                <span class="badge rounded-pill text-bg-primary-subtle text-primary mb-2">Новый аккаунт</span>
+                <h1 class="h3 mb-1">Регистрация</h1>
+                <p class="text-secondary mb-0">Создайте аккаунт для личного дневника.</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Пароль</label>
+            <form method="post" action="/register" class="d-grid gap-3">
+                <#include "/layout/csrf.ftlh">
 
-                <input
-                        id="password"
-                        type="password"
-                        name="password"
-                        required
-                        minlength="6"
-                        maxlength="100"
-                >
+                <div>
+                    <label class="form-label" for="email">Email</label>
 
-                <@errors.field "form.password" />
-            </div>
+                    <@spring.bind "form.email" />
+                    <input class="form-control"
+                           id="email"
+                           type="email"
+                           name="email"
+                           value="${spring.status.value!}"
+                           required
+                           maxlength="254"
+                    >
 
-            <button type="submit">Зарегистрироваться</button>
-        </form>
+                    <@errors.field "form.email" />
+                </div>
 
-        <p>
-            Уже есть аккаунт?
-            <a href="/login">Войти</a>
-        </p>
+                <div>
+                    <label class="form-label" for="password">Пароль</label>
+
+                    <input class="form-control"
+                           id="password"
+                           type="password"
+                           name="password"
+                           required
+                           minlength="6"
+                           maxlength="100"
+                    >
+
+                    <@errors.field "form.password" />
+                </div>
+
+                <button class="btn btn-primary btn-lg" type="submit">Зарегистрироваться</button>
+            </form>
+
+            <p class="mt-4 mb-0 text-secondary">
+                Уже есть аккаунт?
+                <a href="/login">Войти</a>
+            </p>
+        </div>
     </section>
 </@layout.page>

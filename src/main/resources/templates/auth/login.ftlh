@@ -1,59 +1,65 @@
 <#import "/layout/base.ftlh" as layout>
 
 <@layout.page title="Вход">
-    <section class="auth-page">
-        <h1>Вход</h1>
-
-        <#if RequestParameters.error??>
-            <div class="alert alert-error">
-                Неверный email или пароль.
-            </div>
-        </#if>
-
-        <#if RequestParameters.logout??>
-            <div class="alert alert-success">
-                Вы вышли из аккаунта.
-            </div>
-        </#if>
-
-        <#if RequestParameters.registered??>
-            <div class="alert alert-success">
-                Регистрация прошла успешно. Теперь войдите.
-            </div>
-        </#if>
-
-        <form method="post" action="/login" class="auth-form">
-            <#include "/layout/csrf.ftlh">
-
-            <div class="form-group">
-                <label for="email">Email</label>
-
-                <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        required
-                        maxlength="254"
-                >
+    <section class="auth-shell">
+        <div class="auth-card">
+            <div class="mb-4">
+                <span class="badge rounded-pill text-bg-primary-subtle text-primary mb-2">Добро пожаловать</span>
+                <h1 class="h3 mb-1">Вход</h1>
+                <p class="text-secondary mb-0">Продолжите вести дневник питания.</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Пароль</label>
+            <#if RequestParameters.error??>
+                <div class="alert alert-danger border-0">
+                    Неверный email или пароль либо аккаунт заблокирован.
+                </div>
+            </#if>
 
-                <input
-                        id="password"
-                        type="password"
-                        name="password"
-                        required
-                >
-            </div>
+            <#if RequestParameters.logout??>
+                <div class="alert alert-success border-0">
+                    Вы вышли из аккаунта.
+                </div>
+            </#if>
 
-            <button type="submit">Войти</button>
-        </form>
+            <#if RequestParameters.registered??>
+                <div class="alert alert-success border-0">
+                    Регистрация прошла успешно. Теперь войдите.
+                </div>
+            </#if>
 
-        <p>
-            Нет аккаунта?
-            <a href="/register">Зарегистрироваться</a>
-        </p>
+            <form method="post" action="/login" class="d-grid gap-3">
+                <#include "/layout/csrf.ftlh">
+
+                <div>
+                    <label class="form-label" for="email">Email</label>
+
+                    <input class="form-control"
+                           id="email"
+                           type="email"
+                           name="email"
+                           required
+                           maxlength="254"
+                    >
+                </div>
+
+                <div>
+                    <label class="form-label" for="password">Пароль</label>
+
+                    <input class="form-control"
+                           id="password"
+                           type="password"
+                           name="password"
+                           required
+                    >
+                </div>
+
+                <button class="btn btn-primary btn-lg" type="submit">Войти</button>
+            </form>
+
+            <p class="mt-4 mb-0 text-secondary">
+                Нет аккаунта?
+                <a href="/register">Зарегистрироваться</a>
+            </p>
+        </div>
     </section>
 </@layout.page>

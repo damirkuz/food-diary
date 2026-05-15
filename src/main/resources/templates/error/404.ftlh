@@ -1,11 +1,11 @@
 <#import "/layout/base.ftlh" as layout>
 
-<@layout.page title="Ошибка 500">
+<@layout.page title="Ошибка 404">
     <section class="error-page">
         <div class="error-card">
-            <span class="eyebrow">Ошибка 500</span>
-            <h1 class="h3 mb-2">Что-то пошло не так</h1>
-            <p class="text-secondary">${message!"Произошла внутренняя ошибка сервера"}</p>
+            <span class="eyebrow">Ошибка 404</span>
+            <h1 class="h3 mb-2">Страница не найдена</h1>
+            <p class="text-secondary">${message!"Такой страницы или ресурса нет."}</p>
 
             <#if path??>
                 <p class="small text-secondary">Путь: ${path}</p>

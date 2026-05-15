@@ -1,51 +1,56 @@
 <#import "/layout/base.ftlh" as layout>
+<#import "/layout/alerts.ftlh" as alerts>
 
 <@layout.page title="Продукты">
-    <section class="page-header">
+    <section class="page-header mb-4">
         <div>
-            <h1>Продукты</h1>
-            <p>Список продуктов для дневника питания.</p>
+            <span class="eyebrow">Справочник</span>
+            <h1 class="h2 mb-1">Продукты</h1>
+            <p class="text-secondary mb-0">Список продуктов для дневника питания.</p>
         </div>
 
-        <a class="button-link" href="/products/new">Добавить продукт</a>
+        <a class="btn btn-primary" href="/products/new">Добавить продукт</a>
     </section>
 
-    <#if successMessage??>
-        <div class="alert alert-success">${successMessage}</div>
-    </#if>
+    <@alerts.flash />
 
-    <#if errorMessage??>
-        <div class="alert alert-error">${errorMessage}</div>
-    </#if>
+    <section class="app-panel mb-4">
+        <form method="get" action="/products" class="row g-3 align-items-end">
+            <div class="col-lg-6">
+                <label class="form-label" for="search">Поиск</label>
+                <input class="form-control" id="search" name="search" value="${search}" maxlength="255"
+                       placeholder="Например, овсянка">
+            </div>
 
-    <form method="get" action="/products" class="filter-form">
-        <div class="form-group">
-            <label for="search">Поиск</label>
-            <input id="search" name="search" value="${search}" maxlength="255">
-        </div>
+            <div class="col-lg-4">
+                <label class="form-label" for="sort">Сортировка</label>
+                <select class="form-select" id="sort" name="sort">
+                    <option value="createdAt,desc" <#if sort == "createdAt,desc">selected</#if>>Сначала новые</option>
+                    <option value="createdAt,asc" <#if sort == "createdAt,asc">selected</#if>>Сначала старые</option>
+                    <option value="name,asc" <#if sort == "name,asc">selected</#if>>Название А-Я</option>
+                    <option value="name,desc" <#if sort == "name,desc">selected</#if>>Название Я-А</option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="sort">Сортировка</label>
-            <select id="sort" name="sort">
-                <option value="createdAt,desc" <#if sort == "createdAt,desc">selected</#if>>Сначала новые</option>
-                <option value="createdAt,asc" <#if sort == "createdAt,asc">selected</#if>>Сначала старые</option>
-                <option value="name,asc" <#if sort == "name,asc">selected</#if>>Название А-Я</option>
-                <option value="name,desc" <#if sort == "name,desc">selected</#if>>Название Я-А</option>
-            </select>
-        </div>
-
-        <button type="submit">Показать</button>
-    </form>
+            <div class="col-lg-2 d-grid">
+                <button class="btn btn-outline-primary" type="submit">Показать</button>
+            </div>
+        </form>
+    </section>
 
     <#if products.content?size == 0>
-        <p class="empty-state">Пока нет продуктов.</p>
+        <div class="empty-state">
+            <h2 class="h5">Пока нет продуктов</h2>
+            <p class="text-secondary mb-3">Добавьте первый продукт вручную или подтяните БЖУ через внешний API.</p>
+            <a class="btn btn-primary" href="/products/new">Добавить продукт</a>
+        </div>
     <#else>
-        <div class="table-wrap">
-            <table class="data-table">
+        <div class="table-responsive app-table">
+            <table class="table align-middle mb-0">
                 <thead>
                 <tr>
                     <th>Название</th>
-                    <th>Ккал</th>
+                    <th>Ккал / 100 г</th>
                     <th>Белки</th>
                     <th>Жиры</th>
                     <th>Углеводы</th>
@@ -55,18 +60,29 @@
                 <tbody>
                 <#list products.content as product>
                     <tr>
-                        <td>${product.name}</td>
+                        <td>
+                            <a class="fw-semibold text-decoration-none" href="/products/${product.id}">${product.name}</a>
+                            <#if product.public>
+                                <span class="badge text-bg-info ms-2">общее</span>
+                            </#if>
+                        </td>
                         <td>${product.caloriesPer100g}</td>
                         <td>${product.proteinsPer100g}</td>
                         <td>${product.fatsPer100g}</td>
                         <td>${product.carbohydratesPer100g}</td>
-                        <td class="table-actions">
-                            <a href="/products/${product.id}/edit">Изменить</a>
+                        <td>
+                            <div class="d-flex justify-content-end gap-2">
+                                <#if !product.public>
+                                    <a class="btn btn-outline-primary btn-sm" href="/products/${product.id}/edit">Изменить</a>
+                                </#if>
 
-                            <form method="post" action="/products/${product.id}/delete">
-                                <#include "/layout/csrf.ftlh">
-                                <button type="submit" class="danger-button">Удалить</button>
-                            </form>
+                                <#if !product.public>
+                                    <form method="post" action="/products/${product.id}/delete" class="m-0">
+                                        <#include "/layout/csrf.ftlh">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                    </form>
+                                </#if>
+                            </div>
                         </td>
                     </tr>
                 </#list>
@@ -74,15 +90,17 @@
             </table>
         </div>
 
-        <nav class="pagination">
+        <nav class="pagination-nav">
             <#if products.hasPrevious()>
-                <a href="/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
+                <a class="btn btn-outline-primary btn-sm"
+                   href="/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
             </#if>
 
-            <span>${products.number + 1} / ${products.totalPages}</span>
+            <span class="text-secondary small">${products.number + 1} / ${products.totalPages}</span>
 
             <#if products.hasNext()>
-                <a href="/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
+                <a class="btn btn-outline-primary btn-sm"
+                   href="/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
             </#if>
         </nav>
     </#if>

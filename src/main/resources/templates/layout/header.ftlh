@@ -1,19 +1,78 @@
-<header class="site-header">
-    <nav>
-        <a href="/">Главная</a>
+<#assign headerAuthenticated = isAuthenticated!false>
+<#assign headerAdmin = isAdmin!false>
+<#assign headerEmail = currentUserEmail!>
 
-        <#if Session?? && Session.SPRING_SECURITY_CONTEXT??>
-            <a href="/products">Продукты</a>
-            <a href="/diary">Дневник</a>
-            <a href="/profile">Профиль</a>
+<#if !headerAuthenticated && Session?? && Session.SPRING_SECURITY_CONTEXT??>
+    <#assign sessionAuth = Session.SPRING_SECURITY_CONTEXT.authentication>
+    <#if sessionAuth?? && sessionAuth.name != "anonymousUser">
+        <#assign headerAuthenticated = true>
+        <#assign headerEmail = sessionAuth.name>
 
-            <form method="post" action="/logout" class="logout-form">
-                <#include "/layout/csrf.ftlh">
-                <button type="submit" class="link-button">Выйти</button>
-            </form>
-        <#else>
-            <a href="/login">Вход</a>
-            <a href="/register">Регистрация</a>
-        </#if>
+        <#list sessionAuth.authorities as authority>
+            <#if authority.authority == "ROLE_ADMIN">
+                <#assign headerAdmin = true>
+            </#if>
+        </#list>
+    </#if>
+</#if>
+
+<header class="site-header sticky-top">
+    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="/">
+                Food Diary
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Открыть меню">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+
+                    <#if headerAuthenticated>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/diary">Дневник</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/products">Продукты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile">Профиль</a>
+                        </li>
+
+                        <#if headerAdmin>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    Админка
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/admin/users">Пользователи</a></li>
+                                    <li><a class="dropdown-item" href="/admin/products">Все продукты</a></li>
+                                </ul>
+                            </li>
+                        </#if>
+                    </#if>
+                </ul>
+
+                <div class="d-flex align-items-lg-center gap-3 flex-column flex-lg-row">
+                    <#if headerAuthenticated>
+                        <span class="small text-secondary">${headerEmail}</span>
+                        <form method="post" action="/logout" class="m-0">
+                            <#include "/layout/csrf.ftlh">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Выйти</button>
+                        </form>
+                    <#else>
+                        <a class="btn btn-outline-primary btn-sm" href="/login">Вход</a>
+                        <a class="btn btn-primary btn-sm" href="/register">Регистрация</a>
+                    </#if>
+                </div>
+            </div>
+        </div>
     </nav>
 </header>

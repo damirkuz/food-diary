@@ -51,6 +51,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webclient")
 
     implementation("io.swagger.core.v3:swagger-annotations:2.2.49")
+    implementation("org.webjars:bootstrap:5.3.3")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("tools.jackson.module:jackson-module-kotlin")

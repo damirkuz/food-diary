@@ -4,9 +4,9 @@
     <@spring.bind path />
 
     <#if spring.status.errorMessages?has_content>
-        <div class="field-errors">
+        <div class="invalid-feedback d-block">
             <#list spring.status.errorMessages as error>
-                <div class="field-error">${error}</div>
+                <div>${error}</div>
             </#list>
         </div>
     </#if>

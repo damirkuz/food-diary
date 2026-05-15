@@ -1,0 +1,60 @@
+### 1. Open login page and capture CSRF token
+GET http://localhost:8080/login
+
+> {%
+    const match = response.body.match(/name="_csrf" value="([^"]+)"/)
+        || response.body.match(/<meta name="_csrf" content="([^"]+)"/);
+    client.global.set("csrf", match ? match[1] : "");
+%}
+
+### 2. Login with session and CSRF
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+email={{email}}&password={{password}}&_csrf={{csrf}}
+
+### 3. Get current user products
+GET http://localhost:8080/api/products?search=&page=0&size=20&sort=createdAt,desc
+Accept: application/json
+
+### 4. Create product
+POST http://localhost:8080/api/products
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "name": "Гречка",
+  "caloriesPer100g": 343,
+  "proteinsPer100g": 13.3,
+  "fatsPer100g": 3.4,
+  "carbohydratesPer100g": 71.5
+}
+
+> {%
+    client.global.set("productId", response.body.id);
+%}
+
+### 5. Get product by id
+GET http://localhost:8080/api/products/{{productId}}
+Accept: application/json
+
+### 6. Update product
+PUT http://localhost:8080/api/products/{{productId}}
+Content-Type: application/json
+X-CSRF-TOKEN: {{csrf}}
+
+{
+  "name": "Гречка варёная",
+  "caloriesPer100g": 110,
+  "proteinsPer100g": 3.6,
+  "fatsPer100g": 1.1,
+  "carbohydratesPer100g": 21.3
+}
+
+### 7. Lookup nutrition through external API
+GET http://localhost:8080/api/products/nutrition-lookup?name=banana
+Accept: application/json
+
+### 8. Delete product
+DELETE http://localhost:8080/api/products/{{productId}}
+X-CSRF-TOKEN: {{csrf}}
