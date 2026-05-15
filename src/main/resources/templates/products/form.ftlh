@@ -60,5 +60,5 @@
         </div>
     </form>
 
-    <script src="/js/product-lookup-form.js"></script>
+    <script src="${springMacroRequestContext.contextPath}/js/product-lookup-form.js"></script>
 </#macro>

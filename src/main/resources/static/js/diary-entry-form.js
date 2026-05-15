@@ -11,6 +11,7 @@
     const error = form.querySelector("[data-calculation-error]");
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const contextPath = document.querySelector('meta[name="_context_path"]')?.content || "";
 
     const fields = {
         calories: form.querySelector("[data-preview-calories]"),
@@ -54,7 +55,7 @@
         }
 
         try {
-            const response = await fetch("/api/diary/entries/calculate", {
+            const response = await fetch(`${contextPath}/api/diary/entries/calculate`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({ productId, grams })

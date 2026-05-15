@@ -58,7 +58,7 @@
         <div class="app-panel">
             <h2 class="h4 mb-3">Данные профиля</h2>
 
-            <form method="post" action="/profile" class="d-grid gap-3">
+            <form method="post" action="${springMacroRequestContext.contextPath}/profile" class="d-grid gap-3">
                 <#include "/layout/csrf.ftlh">
 
                 <div>

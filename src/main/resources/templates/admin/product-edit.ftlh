@@ -9,7 +9,7 @@
             <p class="text-secondary mb-3">Владелец: ${ownerEmail}</p>
 
             <@productForm.productForm
-                action="/admin/products/${productId}/edit"
+                action="${springMacroRequestContext.contextPath}/admin/products/${productId}/edit"
                 submitText="Сохранить"
                 cancelUrl="/admin/products" />
         </div>

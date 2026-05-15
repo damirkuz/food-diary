@@ -27,7 +27,7 @@
                 </div>
             </#if>
 
-            <form method="post" action="/login" class="d-grid gap-3">
+            <form method="post" action="${springMacroRequestContext.contextPath}/login" class="d-grid gap-3">
                 <#include "/layout/csrf.ftlh">
 
                 <div>
@@ -58,7 +58,7 @@
 
             <p class="mt-4 mb-0 text-secondary">
                 Нет аккаунта?
-                <a href="/register">Зарегистрироваться</a>
+                <a href="${springMacroRequestContext.contextPath}/register">Зарегистрироваться</a>
             </p>
         </div>
     </section>

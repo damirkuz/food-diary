@@ -8,6 +8,8 @@
     const nameInput = form.querySelector("[data-product-name]");
     const lookupButton = form.querySelector("[data-lookup-product]");
     const status = form.querySelector("[data-lookup-status]");
+    const contextPath = document.querySelector('meta[name="_context_path"]')?.content || "";
+
     const fields = {
         caloriesPer100g: form.querySelector("[data-calories]"),
         proteinsPer100g: form.querySelector("[data-proteins]"),
@@ -37,7 +39,7 @@
         setStatus("Ищу данные...", "loading");
 
         try {
-            const response = await fetch(`/api/products/nutrition-lookup?name=${encodeURIComponent(name)}`);
+            const response = await fetch(`${contextPath}/api/products/nutrition-lookup?name=${encodeURIComponent(name)}`);
 
             if (response.status === 404) {
                 setStatus("Продукт не найден", "error");

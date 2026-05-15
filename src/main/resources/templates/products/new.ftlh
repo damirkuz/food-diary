@@ -7,7 +7,7 @@
             <span class="eyebrow">Справочник</span>
             <h1 class="h3 mb-3">Новый продукт</h1>
 
-            <@productForm.productForm action="/products" submitText="Создать" />
+            <@productForm.productForm action="${springMacroRequestContext.contextPath}/products" submitText="Создать" />
         </div>
     </section>
 </@layout.page>

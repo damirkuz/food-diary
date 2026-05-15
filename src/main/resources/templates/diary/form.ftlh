@@ -88,9 +88,9 @@
 
         <div class="d-flex align-items-center gap-2">
             <button class="btn btn-primary" type="submit">${submitText}</button>
-            <a class="btn btn-link" href="/diary?date=${(form.entryDate.toString())!}">Отмена</a>
+            <a class="btn btn-link" href="${springMacroRequestContext.contextPath}/diary?date=${(form.entryDate.toString())!}">Отмена</a>
         </div>
     </form>
 
-    <script src="/js/diary-entry-form.js"></script>
+    <script src="${springMacroRequestContext.contextPath}/js/diary-entry-form.js"></script>
 </#macro>

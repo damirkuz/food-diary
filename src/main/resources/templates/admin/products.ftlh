@@ -9,13 +9,13 @@
             <p class="text-secondary mb-0">Просмотр и управление продуктами всех пользователей.</p>
         </div>
 
-        <a class="btn btn-outline-primary" href="/admin/users">Пользователи</a>
+        <a class="btn btn-outline-primary" href="${springMacroRequestContext.contextPath}/admin/users">Пользователи</a>
     </section>
 
     <@alerts.flash />
 
     <section class="app-panel mb-4">
-        <form method="get" action="/admin/products" class="row g-3 align-items-end">
+        <form method="get" action="${springMacroRequestContext.contextPath}/admin/products" class="row g-3 align-items-end">
             <div class="col-lg-6">
                 <label class="form-label" for="search">Поиск</label>
                 <input class="form-control" id="search" name="search" value="${search}" maxlength="255">
@@ -64,9 +64,9 @@
                         <td>${product.carbohydratesPer100g?string["0.#"]}</td>
                         <td>
                             <div class="d-flex justify-content-end gap-2">
-                                <a class="btn btn-outline-primary btn-sm" href="/admin/products/${product.id}/edit">Изменить</a>
+                                <a class="btn btn-outline-primary btn-sm" href="${springMacroRequestContext.contextPath}/admin/products/${product.id}/edit">Изменить</a>
 
-                                <form method="post" action="/admin/products/${product.id}/delete" class="m-0">
+                                <form method="post" action="${springMacroRequestContext.contextPath}/admin/products/${product.id}/delete" class="m-0">
                                     <#include "/layout/csrf.ftlh">
                                     <button class="btn btn-outline-danger btn-sm" type="submit">Удалить</button>
                                 </form>
@@ -81,12 +81,12 @@
         <nav class="pagination-nav">
             <#if products.hasPrevious()>
                 <a class="btn btn-outline-primary btn-sm"
-                   href="/admin/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
+                   href="${springMacroRequestContext.contextPath}/admin/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
             </#if>
             <span class="text-secondary small">${products.number + 1} / ${products.totalPages}</span>
             <#if products.hasNext()>
                 <a class="btn btn-outline-primary btn-sm"
-                   href="/admin/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
+                   href="${springMacroRequestContext.contextPath}/admin/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
             </#if>
         </nav>
     </#if>

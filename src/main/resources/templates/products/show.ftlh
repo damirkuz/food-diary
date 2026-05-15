@@ -14,9 +14,9 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a class="btn btn-outline-primary" href="/products">Назад</a>
+            <a class="btn btn-outline-primary" href="${springMacroRequestContext.contextPath}/products">Назад</a>
             <#if !product.public>
-                <a class="btn btn-primary" href="/products/${product.id}/edit">Изменить</a>
+                <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/products/${product.id}/edit">Изменить</a>
             </#if>
         </div>
     </section>

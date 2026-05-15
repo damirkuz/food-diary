@@ -11,7 +11,7 @@
                 <p class="text-secondary mb-0">Создайте аккаунт для личного дневника.</p>
             </div>
 
-            <form method="post" action="/register" class="d-grid gap-3">
+            <form method="post" action="${springMacroRequestContext.contextPath}/register" class="d-grid gap-3">
                 <#include "/layout/csrf.ftlh">
 
                 <div>
@@ -50,7 +50,7 @@
 
             <p class="mt-4 mb-0 text-secondary">
                 Уже есть аккаунт?
-                <a href="/login">Войти</a>
+                <a href="${springMacroRequestContext.contextPath}/login">Войти</a>
             </p>
         </div>
     </section>

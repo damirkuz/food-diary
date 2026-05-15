@@ -26,13 +26,13 @@
             <p class="text-secondary mb-0">Записи и итоги за выбранный день.</p>
         </div>
 
-        <a class="btn btn-primary" href="/diary/entries/new?date=${selectedDate}">Добавить запись</a>
+        <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/diary/entries/new?date=${selectedDate}">Добавить запись</a>
     </section>
 
     <@alerts.flash />
 
     <section class="app-panel mb-4">
-        <form method="get" action="/diary" class="row g-3 align-items-end">
+        <form method="get" action="${springMacroRequestContext.contextPath}/diary" class="row g-3 align-items-end">
             <div class="col-sm-8 col-lg-4">
                 <label class="form-label" for="date">Дата</label>
                 <input class="form-control" id="date" type="date" name="date" value="${selectedDate}" required>
@@ -82,7 +82,7 @@
                     <h2 class="h5 mb-1">Сравнение с нормой</h2>
                     <p class="text-secondary mb-0">Возраст: ${dailyNorm.age}</p>
                 </div>
-                <a class="btn btn-outline-primary btn-sm" href="/profile">Изменить профиль</a>
+                <a class="btn btn-outline-primary btn-sm" href="${springMacroRequestContext.contextPath}/profile">Изменить профиль</a>
             </div>
 
             <div class="row g-3">
@@ -120,7 +120,7 @@
         <div class="empty-state mb-4">
             <h2 class="h5">Нет расчёта нормы</h2>
             <p class="text-secondary mb-3">Заполните профиль, чтобы видеть сравнение с дневной нормой.</p>
-            <a class="btn btn-primary" href="/profile">Заполнить профиль</a>
+            <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/profile">Заполнить профиль</a>
         </div>
     </#if>
 
@@ -128,7 +128,7 @@
         <div class="empty-state">
             <h2 class="h5">За этот день записей пока нет</h2>
             <p class="text-secondary mb-3">Добавьте приём пищи, чтобы увидеть итоги и сравнение с нормой.</p>
-            <a class="btn btn-primary" href="/diary/entries/new?date=${selectedDate}">Добавить запись</a>
+            <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/diary/entries/new?date=${selectedDate}">Добавить запись</a>
         </div>
     <#else>
         <div class="table-responsive app-table">
@@ -157,9 +157,9 @@
                         <td>${entry.carbohydrates?string["0.#"]}</td>
                         <td>
                             <div class="d-flex justify-content-end gap-2">
-                                <a class="btn btn-outline-primary btn-sm" href="/diary/entries/${entry.id}/edit">Изменить</a>
+                                <a class="btn btn-outline-primary btn-sm" href="${springMacroRequestContext.contextPath}/diary/entries/${entry.id}/edit">Изменить</a>
 
-                                <form method="post" action="/diary/entries/${entry.id}/delete" class="m-0">
+                                <form method="post" action="${springMacroRequestContext.contextPath}/diary/entries/${entry.id}/delete" class="m-0">
                                     <#include "/layout/csrf.ftlh">
                                     <input type="hidden" name="date" value="${selectedDate}">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>

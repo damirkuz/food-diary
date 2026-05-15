@@ -12,11 +12,11 @@
 
             <div class="d-flex flex-wrap gap-2">
                 <#if isAuthenticated>
-                    <a class="btn btn-light btn-lg text-primary" href="/diary">Открыть дневник</a>
-                    <a class="btn btn-outline-light btn-lg" href="/products">Мои продукты</a>
+                    <a class="btn btn-light btn-lg text-primary" href="${springMacroRequestContext.contextPath}/diary">Открыть дневник</a>
+                    <a class="btn btn-outline-light btn-lg" href="${springMacroRequestContext.contextPath}/products">Мои продукты</a>
                 <#else>
-                    <a class="btn btn-light btn-lg text-primary" href="/register">Начать работу</a>
-                    <a class="btn btn-outline-light btn-lg" href="/login">Войти</a>
+                    <a class="btn btn-light btn-lg text-primary" href="${springMacroRequestContext.contextPath}/register">Начать работу</a>
+                    <a class="btn btn-outline-light btn-lg" href="${springMacroRequestContext.contextPath}/login">Войти</a>
                 </#if>
             </div>
         </div>
@@ -62,7 +62,7 @@
                 </p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <a class="btn btn-primary" href="/profile">Перейти к профилю</a>
+                <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/profile">Перейти к профилю</a>
             </div>
         </div>
     </section>

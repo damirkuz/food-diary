@@ -9,13 +9,13 @@
             <p class="text-secondary mb-0">Список продуктов для дневника питания.</p>
         </div>
 
-        <a class="btn btn-primary" href="/products/new">Добавить продукт</a>
+        <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/products/new">Добавить продукт</a>
     </section>
 
     <@alerts.flash />
 
     <section class="app-panel mb-4">
-        <form method="get" action="/products" class="row g-3 align-items-end">
+        <form method="get" action="${springMacroRequestContext.contextPath}/products" class="row g-3 align-items-end">
             <div class="col-lg-6">
                 <label class="form-label" for="search">Поиск</label>
                 <input class="form-control" id="search" name="search" value="${search}" maxlength="255"
@@ -42,7 +42,7 @@
         <div class="empty-state">
             <h2 class="h5">Пока нет продуктов</h2>
             <p class="text-secondary mb-3">Добавьте первый продукт вручную или подтяните БЖУ через внешний API.</p>
-            <a class="btn btn-primary" href="/products/new">Добавить продукт</a>
+            <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/products/new">Добавить продукт</a>
         </div>
     <#else>
         <div class="table-responsive app-table">
@@ -61,7 +61,7 @@
                 <#list products.content as product>
                     <tr>
                         <td>
-                            <a class="fw-semibold text-decoration-none" href="/products/${product.id}">${product.name}</a>
+                            <a class="fw-semibold text-decoration-none" href="${springMacroRequestContext.contextPath}/products/${product.id}">${product.name}</a>
                             <#if product.public>
                                 <span class="badge text-bg-info ms-2">общее</span>
                             </#if>
@@ -73,11 +73,11 @@
                         <td>
                             <div class="d-flex justify-content-end gap-2">
                                 <#if !product.public>
-                                    <a class="btn btn-outline-primary btn-sm" href="/products/${product.id}/edit">Изменить</a>
+                                    <a class="btn btn-outline-primary btn-sm" href="${springMacroRequestContext.contextPath}/products/${product.id}/edit">Изменить</a>
                                 </#if>
 
                                 <#if !product.public>
-                                    <form method="post" action="/products/${product.id}/delete" class="m-0">
+                                    <form method="post" action="${springMacroRequestContext.contextPath}/products/${product.id}/delete" class="m-0">
                                         <#include "/layout/csrf.ftlh">
                                         <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
                                     </form>
@@ -93,14 +93,14 @@
         <nav class="pagination-nav">
             <#if products.hasPrevious()>
                 <a class="btn btn-outline-primary btn-sm"
-                   href="/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
+                   href="${springMacroRequestContext.contextPath}/products?page=${products.number - 1}&size=${products.size}&sort=${sort}&search=${search?url}">Назад</a>
             </#if>
 
             <span class="text-secondary small">${products.number + 1} / ${products.totalPages}</span>
 
             <#if products.hasNext()>
                 <a class="btn btn-outline-primary btn-sm"
-                   href="/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
+                   href="${springMacroRequestContext.contextPath}/products?page=${products.number + 1}&size=${products.size}&sort=${sort}&search=${search?url}">Вперёд</a>
             </#if>
         </nav>
     </#if>

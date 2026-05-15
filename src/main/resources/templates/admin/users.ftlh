@@ -18,13 +18,13 @@
             <p class="text-secondary mb-0">Управление доступом, блокировкой и ролью администратора.</p>
         </div>
 
-        <a class="btn btn-outline-primary" href="/admin/products">Все продукты</a>
+        <a class="btn btn-outline-primary" href="${springMacroRequestContext.contextPath}/admin/products">Все продукты</a>
     </section>
 
     <@alerts.flash />
 
     <section class="app-panel mb-4">
-        <form method="get" action="/admin/users" class="row g-3 align-items-end">
+        <form method="get" action="${springMacroRequestContext.contextPath}/admin/users" class="row g-3 align-items-end">
             <div class="col-lg-10">
                 <label class="form-label" for="search">Поиск по email</label>
                 <input class="form-control" id="search" name="search" value="${search}" maxlength="254">
@@ -72,7 +72,7 @@
                                 Действия
                             </button>
                             <div class="dropdown-menu dropdown-menu-end action-menu">
-                                <form method="post" action="/admin/users/${user.id}/role" class="m-0">
+                                <form method="post" action="${springMacroRequestContext.contextPath}/admin/users/${user.id}/role" class="m-0">
                                     <#include "/layout/csrf.ftlh">
                                     <input type="hidden" name="admin" value="${(!adminRole)?string('true', 'false')}">
                                     <button class="dropdown-item" type="submit" <#if isSelf && adminRole>disabled</#if>>
@@ -80,7 +80,7 @@
                                     </button>
                                 </form>
 
-                                <form method="post" action="/admin/users/${user.id}/status" class="m-0">
+                                <form method="post" action="${springMacroRequestContext.contextPath}/admin/users/${user.id}/status" class="m-0">
                                     <#include "/layout/csrf.ftlh">
                                     <input type="hidden" name="enabled" value="${(!user.enabled)?string('true', 'false')}">
                                     <button class="dropdown-item text-danger" type="submit" <#if isSelf && user.enabled>disabled</#if>>
@@ -99,12 +99,12 @@
     <nav class="pagination-nav">
         <#if users.hasPrevious()>
             <a class="btn btn-outline-primary btn-sm"
-               href="/admin/users?page=${users.number - 1}&size=${users.size}&search=${search?url}">Назад</a>
+               href="${springMacroRequestContext.contextPath}/admin/users?page=${users.number - 1}&size=${users.size}&search=${search?url}">Назад</a>
         </#if>
         <span class="text-secondary small">${users.number + 1} / ${users.totalPages}</span>
         <#if users.hasNext()>
             <a class="btn btn-outline-primary btn-sm"
-               href="/admin/users?page=${users.number + 1}&size=${users.size}&search=${search?url}">Вперёд</a>
+               href="${springMacroRequestContext.contextPath}/admin/users?page=${users.number + 1}&size=${users.size}&search=${search?url}">Вперёд</a>
         </#if>
     </nav>
 </@layout.page>

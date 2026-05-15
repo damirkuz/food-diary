@@ -11,7 +11,7 @@
                 <p class="small text-secondary">Путь: ${path}</p>
             </#if>
 
-            <a class="btn btn-primary" href="/">На главную</a>
+            <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/">На главную</a>
         </div>
     </section>
 </@layout.page>

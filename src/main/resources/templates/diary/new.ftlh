@@ -11,10 +11,10 @@
                 <div class="empty-state">
                     <h2 class="h5">Нет продуктов</h2>
                     <p class="text-secondary mb-3">Сначала добавьте хотя бы один продукт.</p>
-                    <a class="btn btn-primary" href="/products/new">Добавить продукт</a>
+                    <a class="btn btn-primary" href="${springMacroRequestContext.contextPath}/products/new">Добавить продукт</a>
                 </div>
             <#else>
-                <@diaryForm.foodEntryForm action="/diary/entries" submitText="Добавить запись" />
+                <@diaryForm.foodEntryForm action="${springMacroRequestContext.contextPath}/diary/entries" submitText="Добавить запись" />
             </#if>
         </div>
     </section>

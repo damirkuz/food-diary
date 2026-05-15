@@ -19,7 +19,7 @@
 <header class="site-header sticky-top">
     <nav class="navbar navbar-expand-lg bg-white border-bottom">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="/">
+            <a class="navbar-brand fw-bold text-primary" href="${springMacroRequestContext.contextPath}/">
                 Food Diary
             </a>
 
@@ -31,18 +31,18 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Главная</a>
+                        <a class="nav-link" href="${springMacroRequestContext.contextPath}/">Главная</a>
                     </li>
 
                     <#if headerAuthenticated>
                         <li class="nav-item">
-                            <a class="nav-link" href="/diary">Дневник</a>
+                            <a class="nav-link" href="${springMacroRequestContext.contextPath}/diary">Дневник</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/products">Продукты</a>
+                            <a class="nav-link" href="${springMacroRequestContext.contextPath}/products">Продукты</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile">Профиль</a>
+                            <a class="nav-link" href="${springMacroRequestContext.contextPath}/profile">Профиль</a>
                         </li>
 
                         <#if headerAdmin>
@@ -52,8 +52,8 @@
                                     Админка
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/admin/users">Пользователи</a></li>
-                                    <li><a class="dropdown-item" href="/admin/products">Все продукты</a></li>
+                                    <li><a class="dropdown-item" href="${springMacroRequestContext.contextPath}/admin/users">Пользователи</a></li>
+                                    <li><a class="dropdown-item" href="${springMacroRequestContext.contextPath}/admin/products">Все продукты</a></li>
                                 </ul>
                             </li>
                         </#if>
@@ -63,13 +63,13 @@
                 <div class="d-flex align-items-lg-center gap-3 flex-column flex-lg-row">
                     <#if headerAuthenticated>
                         <span class="small text-secondary">${headerEmail}</span>
-                        <form method="post" action="/logout" class="m-0">
+                        <form method="post" action="${springMacroRequestContext.contextPath}/logout" class="m-0">
                             <#include "/layout/csrf.ftlh">
                             <button type="submit" class="btn btn-outline-primary btn-sm">Выйти</button>
                         </form>
                     <#else>
-                        <a class="btn btn-outline-primary btn-sm" href="/login">Вход</a>
-                        <a class="btn btn-primary btn-sm" href="/register">Регистрация</a>
+                        <a class="btn btn-outline-primary btn-sm" href="${springMacroRequestContext.contextPath}/login">Вход</a>
+                        <a class="btn btn-primary btn-sm" href="${springMacroRequestContext.contextPath}/register">Регистрация</a>
                     </#if>
                 </div>
             </div>
