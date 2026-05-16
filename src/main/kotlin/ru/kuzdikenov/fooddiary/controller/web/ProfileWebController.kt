@@ -16,6 +16,7 @@ import ru.kuzdikenov.fooddiary.service.CurrentUserService
 import ru.kuzdikenov.fooddiary.service.GoalService
 import ru.kuzdikenov.fooddiary.service.NutritionNormService
 import ru.kuzdikenov.fooddiary.service.ProfileService
+import java.time.LocalDate
 
 @Controller
 @RequestMapping("/profile")
@@ -64,6 +65,8 @@ class ProfileWebController(
         model.addAttribute("genders", Gender.entries)
         model.addAttribute("activityLevels", ActivityLevel.entries)
         model.addAttribute("goals", goals)
+        model.addAttribute("birthDateMin", LocalDate.now().minusYears(120))
+        model.addAttribute("birthDateMax", LocalDate.now().minusYears(1))
     }
 
 }

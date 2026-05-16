@@ -66,6 +66,36 @@ class ProductServiceTest {
     }
 
     @Test
+    fun `normalizes product pagination params`() {
+        Mockito.`when`(
+            productRepository.findAllByOwnerIdOrIsPublicTrue(Mockito.eq(7L), anyPageable())
+        ).thenReturn(PageImpl(emptyList()))
+
+        service.getCurrentUserProducts(ownerId = 7, search = null, page = -5, size = 1000, sort = "createdAt,desc")
+
+        val captor = ArgumentCaptor.forClass(Pageable::class.java)
+        Mockito.verify(productRepository).findAllByOwnerIdOrIsPublicTrue(Mockito.eq(7L), captor.capturePageable())
+        assertEquals(0, captor.value.pageNumber)
+        assertEquals(100, captor.value.pageSize)
+    }
+
+    @Test
+    fun `rejects unrealistic product values`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            service.createProduct(
+                ProductUpsertCommand(
+                    name = "Impossible",
+                    caloriesPer100g = 52.0,
+                    proteinsPer100g = 101.0,
+                    fatsPer100g = 0.2,
+                    carbohydratesPer100g = 14.0
+                ),
+                ownerId = 7
+            )
+        }
+    }
+
+    @Test
     fun `updates only owned product`() {
         Mockito.`when`(productRepository.findById(1L)).thenReturn(Optional.of(product(ownerId = 7)))
         Mockito.`when`(productRepository.save(anyProduct())).thenAnswer { it.getArgument(0) }
@@ -116,6 +146,10 @@ class ProductServiceTest {
 
     private fun eqString(value: String): String {
         return Mockito.eq(value) ?: value
+    }
+
+    private fun ArgumentCaptor<Pageable>.capturePageable(): Pageable {
+        return capture() ?: PageRequest.of(0, 20)
     }
 
     private fun product(ownerId: Long, isPublic: Boolean = false): ProductEntity {

@@ -89,6 +89,28 @@ class ProductDomainServiceTest {
     }
 
     @Test
+    fun `rejects unrealistic nutrition values`() {
+        val product = product(ownerId = 10)
+
+        assertThrows(IllegalArgumentException::class.java) {
+            service.calculateNutrition(product, grams = 10000.1)
+        }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            service.applyUpsert(
+                product,
+                ProductUpsertCommand(
+                    name = "Oil",
+                    caloriesPer100g = 1500.0,
+                    proteinsPer100g = 0.0,
+                    fatsPer100g = 100.0,
+                    carbohydratesPer100g = 0.0
+                )
+            )
+        }
+    }
+
+    @Test
     fun `does not reject unused product`() {
         val product = product(ownerId = 10)
 

@@ -1,6 +1,7 @@
 package ru.kuzdikenov.fooddiary.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import ru.kuzdikenov.fooddiary.entity.ActivityLevel
@@ -65,11 +66,31 @@ class ProfileServiceTest {
         assertEquals(75.0, updated.weightKg)
     }
 
-    private fun command(goalId: Long, weightKg: Double = 80.0): ProfileUpsertCommand {
+    @Test
+    fun `rejects unrealistic profile values`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            service.updateProfile(7, command(goalId = 1, birthDate = LocalDate.now().minusYears(121)))
+        }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            service.updateProfile(7, command(goalId = 1, heightCm = 1000))
+        }
+
+        assertThrows(IllegalArgumentException::class.java) {
+            service.updateProfile(7, command(goalId = 1, weightKg = 1000.0))
+        }
+    }
+
+    private fun command(
+        goalId: Long,
+        birthDate: LocalDate = LocalDate.of(2000, 1, 1),
+        heightCm: Int = 180,
+        weightKg: Double = 80.0
+    ): ProfileUpsertCommand {
         return ProfileUpsertCommand(
             gender = Gender.MALE,
-            birthDate = LocalDate.of(2000, 1, 1),
-            heightCm = 180,
+            birthDate = birthDate,
+            heightCm = heightCm,
             weightKg = weightKg,
             activityLevel = ActivityLevel.MODERATE,
             goalId = goalId

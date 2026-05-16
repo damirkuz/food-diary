@@ -79,7 +79,7 @@
                     <label class="form-label" for="birthDate">Дата рождения</label>
                     <@spring.bind "form.birthDate" />
                     <input class="form-control" id="birthDate" type="date" name="birthDate"
-                           value="${(form.birthDate.toString())!}" required>
+                           value="${(form.birthDate.toString())!}" min="${birthDateMin}" max="${birthDateMax}" required>
                     <@errors.field "form.birthDate" />
                 </div>
 
@@ -88,7 +88,7 @@
                         <label class="form-label" for="heightCm">Рост, см</label>
                         <@spring.bind "form.heightCm" />
                         <input class="form-control" id="heightCm" type="number" name="heightCm"
-                               value="${spring.status.value!}" min="1" max="300" step="1" required>
+                               value="${spring.status.value!}" min="50" max="250" step="1" required>
                         <@errors.field "form.heightCm" />
                     </div>
 
@@ -96,7 +96,7 @@
                         <label class="form-label" for="weightKg">Вес, кг</label>
                         <@spring.bind "form.weightKg" />
                         <input class="form-control" id="weightKg" type="number" name="weightKg"
-                               value="${spring.status.value!}" min="1" step="0.01" required>
+                               value="${spring.status.value!}" min="2" max="500" step="0.01" required>
                         <@errors.field "form.weightKg" />
                     </div>
                 </div>

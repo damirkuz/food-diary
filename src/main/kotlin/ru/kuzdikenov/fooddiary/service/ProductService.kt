@@ -19,6 +19,8 @@ class ProductService(
 
     @Transactional
     fun createProduct(command: ProductUpsertCommand, ownerId: Long): ProductEntity {
+        productDomainService.validateUpsert(command)
+
         val owner = userRepository.findById(ownerId).orElseThrow { UserNotFoundException() }
 
         val product = ProductEntity(
@@ -41,7 +43,7 @@ class ProductService(
         size: Int,
         sort: String
     ): Page<ProductEntity> {
-        val pageable = PageRequest.of(page, size, ProductSorts.user(sort))
+        val pageable = PageRequest.of(page.coerceAtLeast(0), size.coerceIn(1, 100), ProductSorts.user(sort))
         val normalizedSearch = search?.trim()
 
         return if (normalizedSearch.isNullOrBlank()) {

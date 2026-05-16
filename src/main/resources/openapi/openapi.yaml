@@ -616,24 +616,28 @@ components:
           type: number
           format: double
           minimum: 0
+          maximum: 1000
           description: Калорийность на 100 граммов
           example: 52
         proteinsPer100g:
           type: number
           format: double
           minimum: 0
+          maximum: 100
           description: Белки на 100 граммов
           example: 0.3
         fatsPer100g:
           type: number
           format: double
           minimum: 0
+          maximum: 100
           description: Жиры на 100 граммов
           example: 0.2
         carbohydratesPer100g:
           type: number
           format: double
           minimum: 0
+          maximum: 100
           description: Углеводы на 100 граммов
           example: 14
 
@@ -773,6 +777,7 @@ components:
           type: number
           format: double
           minimum: 0.1
+          maximum: 10000
           description: Масса продукта в граммах
           example: 150
 
@@ -794,6 +799,7 @@ components:
           type: number
           format: double
           minimum: 0.1
+          maximum: 10000
           description: Масса продукта в граммах
           example: 250
 

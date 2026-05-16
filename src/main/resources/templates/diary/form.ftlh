@@ -50,7 +50,7 @@
             <label class="form-label" for="grams">Масса, г</label>
             <@spring.bind "form.grams" />
             <input class="form-control" id="grams" type="number" name="grams" value="${spring.status.value!}"
-                   min="0.1" step="0.1" required data-grams>
+                   min="0.1" max="10000" step="0.1" required data-grams>
             <@errors.field "form.grams" />
         </div>
 

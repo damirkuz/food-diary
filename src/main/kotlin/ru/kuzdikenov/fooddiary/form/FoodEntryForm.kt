@@ -1,5 +1,6 @@
 package ru.kuzdikenov.fooddiary.form
 
+import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotNull
 import ru.kuzdikenov.fooddiary.entity.FoodEntryEntity
@@ -20,6 +21,7 @@ class FoodEntryForm(
 
     @field:NotNull(message = "Масса обязательна")
     @field:DecimalMin(value = "0.1", message = "Масса должна быть больше 0")
+    @field:DecimalMax(value = "10000.0", message = "Масса должна быть не больше 10000 г")
     var grams: Double? = null
 ) {
     fun toCommand(): FoodEntryUpsertCommand {

@@ -140,6 +140,26 @@ class ApiExceptionHandler {
             )
     }
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgument(
+        ex: IllegalArgumentException,
+        request: HttpServletRequest
+    ): ResponseEntity<ValidationErrorResponse> {
+        logger.warn("API bad request at {}: {}", request.requestURI, ex.message)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(
+                ValidationErrorResponse(
+                    status = HttpStatus.BAD_REQUEST.value(),
+                    error = "VALIDATION_ERROR",
+                    message = ex.message ?: "Некорректные данные запроса",
+                    timestamp = OffsetDateTime.now(ZoneOffset.UTC),
+                    path = request.requestURI,
+                    fieldErrors = emptyList()
+                )
+            )
+    }
+
     private fun error(
         status: HttpStatus,
         error: String,
