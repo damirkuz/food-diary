@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: food-diary:${APP_VERSION:-1.0.0}
     container_name: food-diary-app
     restart: unless-stopped
     networks:

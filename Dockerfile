@@ -15,7 +15,7 @@ WORKDIR /app
 
 RUN addgroup -S fooddiary && adduser -S fooddiary -G fooddiary
 
-COPY --from=build /workspace/build/libs/fooddiary-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY --from=build /workspace/build/libs/fooddiary-*.jar /app/app.jar
 
 USER fooddiary
 
