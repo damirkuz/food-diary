@@ -1,0 +1,24 @@
+# Прод-деплой за Traefik на VPS. Запуск:
+#   docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
+# Чтобы порт 8080 не торчал наружу (доступ только через Traefik), в .env:
+#   APP_PORT=127.0.0.1:8080
+services:
+  app:
+    networks:
+      - default
+      - web_network
+    environment:
+      SERVER_SERVLET_CONTEXT_PATH: /${CONTEXT_NAME}
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web_network
+      - traefik.http.routers.fooddiary.rule=(Host(`${DOMAIN}`) || Host(`${IP_HOST}`)) && PathPrefix(`/${CONTEXT_NAME}`)
+      - traefik.http.routers.fooddiary.entrypoints=web,websecure
+      - traefik.http.routers.fooddiary.tls.certresolver=myresolver
+      - traefik.http.routers.fooddiary.service=fooddiary
+      - traefik.http.services.fooddiary.loadbalancer.server.port=8080
+
+networks:
+  web_network:
+    external: true
