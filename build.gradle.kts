@@ -49,8 +49,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
 
-    implementation("org.springframework.boot:spring-boot-starter-webclient")
-
     implementation("io.swagger.core.v3:swagger-annotations:2.2.49")
     implementation("org.webjars:bootstrap:5.3.3")
 
@@ -111,8 +109,6 @@ tasks.jacocoTestReport {
                     "**/entity/**",
                     "**/form/**",
                     "**/config/properties/**",
-                    "**/service/nutrition/**",
-                    "**/service/translate/**",
                     "**/ru/kuzdikenov/api/**"
                 )
             }

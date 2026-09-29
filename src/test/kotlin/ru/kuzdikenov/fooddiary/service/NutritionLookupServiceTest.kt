@@ -10,18 +10,12 @@ import ru.kuzdikenov.fooddiary.dto.ProductLookup
 import ru.kuzdikenov.fooddiary.exception.ExternalNutritionLookupException
 import ru.kuzdikenov.fooddiary.exception.NutritionLookupNotFoundException
 import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
-import ru.kuzdikenov.fooddiary.service.translate.TranslationProvider
 
 class NutritionLookupServiceTest {
 
     private val cacheService = Mockito.mock(ProductLookupCacheService::class.java)
     private val provider = Mockito.mock(NutritionProvider::class.java)
-    private val queryService = ProductSearchQueryService(
-        translationProvider = object : TranslationProvider {
-            override fun translate(text: String): String? = "apple"
-        }
-    )
-    private val service = NutritionLookupService(listOf(provider), queryService, cacheService)
+    private val service = NutritionLookupService(listOf(provider), cacheService)
 
     @Test
     fun `returns cached product without calling providers`() {
@@ -29,6 +23,15 @@ class NutritionLookupServiceTest {
         Mockito.`when`(cacheService.get("banana")).thenReturn(cached)
 
         assertEquals(cached, service.lookupProductNutrition("banana"))
+        Mockito.verify(provider, Mockito.never()).lookup(Mockito.anyString())
+    }
+
+    @Test
+    fun `trims query before cache lookup`() {
+        val cached = lookup(name = "banana", cached = true)
+        Mockito.`when`(cacheService.get("banana")).thenReturn(cached)
+
+        assertEquals(cached, service.lookupProductNutrition("  banana  "))
         Mockito.verify(provider, Mockito.never()).lookup(Mockito.anyString())
     }
 
@@ -43,15 +46,6 @@ class NutritionLookupServiceTest {
         assertFalse(result.cached)
         assertEquals("banana", result.name)
         Mockito.verify(cacheService).put("banana", providerResult)
-    }
-
-    @Test
-    fun `translates cyrillic query before lookup`() {
-        val translatedResult = lookup(name = "apple", cached = false)
-        Mockito.`when`(cacheService.get("apple")).thenReturn(null)
-        Mockito.`when`(provider.lookup("apple")).thenReturn(translatedResult)
-
-        assertEquals(translatedResult, service.lookupProductNutrition("яблоко"))
     }
 
     @Test

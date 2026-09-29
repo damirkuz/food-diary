@@ -9,27 +9,24 @@ import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
 @Service
 class NutritionLookupService(
     private val lookupProviders: List<NutritionProvider>,
-    private val productSearchQueryService: ProductSearchQueryService,
     private val productLookupCacheService: ProductLookupCacheService,
 ) {
 
     fun lookupProductNutrition(name: String): ProductLookup {
+        val query = name.trim()
+
+        productLookupCacheService.get(query)?.let { return it }
+
         var externalFailure = false
 
-        val queries = productSearchQueryService.buildQueries(name)
-
-        queries.forEach { query ->
-            productLookupCacheService.get(query)?.let { return it }
-
-            lookupProviders.forEach { provider ->
-                try {
-                    provider.lookup(query)?.let {
-                        productLookupCacheService.put(query, it)
-                        return it.copy(cached = false)
-                    }
-                } catch (ex: ExternalNutritionLookupException) {
-                    externalFailure = true
+        lookupProviders.forEach { provider ->
+            try {
+                provider.lookup(query)?.let {
+                    productLookupCacheService.put(query, it)
+                    return it.copy(cached = false)
                 }
+            } catch (ex: ExternalNutritionLookupException) {
+                externalFailure = true
             }
         }
 
