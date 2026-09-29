@@ -45,6 +45,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-session-data-redis")
+
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")
@@ -138,9 +141,12 @@ fun envOrDotEnv(name: String): String {
     return providers.environmentVariable(name).orNull ?: dotEnv[name].orEmpty()
 }
 
+val dbHost = envOrDotEnv("DB_HOST").ifBlank { "localhost" }
+val dbPort = envOrDotEnv("DB_PORT").ifBlank { "5433" }
+
 flyway {
     driver = "org.postgresql.Driver"
-    url = "jdbc:postgresql://localhost:5433/${envOrDotEnv("DB_NAME")}"
+    url = "jdbc:postgresql://$dbHost:$dbPort/${envOrDotEnv("DB_NAME")}"
     user = envOrDotEnv("DB_USER")
     password = envOrDotEnv("DB_PASSWORD")
     locations = arrayOf("filesystem:src/main/resources/db/migration")
