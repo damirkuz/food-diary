@@ -1,4 +1,4 @@
-FROM eclipse-temurin:24-jdk-alpine AS build
+FROM eclipse-temurin:25-jdk-alpine AS build
 
 WORKDIR /workspace
 
@@ -9,7 +9,7 @@ COPY src ./src
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar --no-daemon
 
-FROM eclipse-temurin:24-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 WORKDIR /app
 
