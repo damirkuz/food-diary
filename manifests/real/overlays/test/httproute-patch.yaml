@@ -6,16 +6,15 @@ spec:
   hostnames:
     - test.food-diary.local
   rules:
-  # Dev-дверь на нестандартном порту: приложение должно видеть настоящий
-  # host:port клиента, иначе его абсолютные редиректы теряют :52584
+  # приложение должно видеть настоящий host:port, иначе абсолютные редиректы теряют порт
   - filters:
     - type: RequestHeaderModifier
       requestHeaderModifier:
         set:
         - name: x-forwarded-host
-          value: test.food-diary.local:52584
+          value: test.food-diary.local:8080
         - name: x-forwarded-port
-          value: "52584"
+          value: "8080"
     backendRefs:
     - name: food-diary-service
       port: 80
