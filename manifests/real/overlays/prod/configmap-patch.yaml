@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: food-diary-configmap
+data:
+  # Прод: кеш шаблонов включён — шаблоны компилируются один раз
+  FREEMARKER_CACHE: "true"

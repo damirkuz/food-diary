@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: food-diary-configmap
+data:
+  SERVER_PORT: "8080"
+  # доверять X-Forwarded-*: иначе редиректы строятся от усечённого Host без порта
+  SERVER_FORWARD_HEADERS_STRATEGY: "framework"
+  DB_HOST: food-diary-db
+  DB_PORT: "5432"
+  DB_NAME: fooddiary
+  REDIS_HOST: food-diary-redis
+  REDIS_PORT: "6379"
+  # Кеш шаблонов FreeMarker: false при разработке, true на проде
+  FREEMARKER_CACHE: "false"
+  # Внешний поиск продуктов через Open Food Facts (без API-ключа)
+  OPEN_FOOD_FACTS_ENABLED: "true"
+
+...
+

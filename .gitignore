@@ -41,5 +41,4 @@ out/
 .kotlin
 
 .env
-
-Отчёт.md
+sre/*.zip

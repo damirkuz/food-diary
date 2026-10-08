@@ -1,0 +1,21 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: food-diary-route
+spec:
+  hostnames:
+    - test.food-diary.local
+  rules:
+  # Dev-дверь на нестандартном порту: приложение должно видеть настоящий
+  # host:port клиента, иначе его абсолютные редиректы теряют :52584
+  - filters:
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        set:
+        - name: x-forwarded-host
+          value: test.food-diary.local:52584
+        - name: x-forwarded-port
+          value: "52584"
+    backendRefs:
+    - name: food-diary-service
+      port: 80

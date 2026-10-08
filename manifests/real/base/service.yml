@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-service
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: food-diary
+  type: ClusterIP
+...
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-db
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: food-diary-db
+  type: ClusterIP
+...
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-redis
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: food-diary-redis
+  type: ClusterIP
+...

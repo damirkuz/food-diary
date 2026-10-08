@@ -4,7 +4,7 @@
 
 Для этого выполним команду:
 ```bash
-kubectl apply -f deployment.yml
+kubectl apply -f deployment.yaml
 ```
 2) Проверка результата
 
