@@ -1,0 +1,19 @@
+# «Дверь» теста: закреплённый nodePort на Envoy-поды тестового шлюза.
+# Свой Service в namespace контроллера (Service выбирает поды только своего ns),
+# селектор — по лейблам, которые Envoy Gateway вешает на data plane.
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-door-test
+  namespace: envoy-gateway-system
+spec:
+  type: NodePort
+  selector:
+    gateway.envoyproxy.io/owning-gateway-name: food-diary-gateway
+    gateway.envoyproxy.io/owning-gateway-namespace: food-diary-test
+  ports:
+  - name: http
+    nodePort: 32444          # хост: 8080 (minikube start --ports 8080:32444)
+    port: 80
+    targetPort: 10080        # Envoy-контейнер под non-root слушает 10080
+    protocol: TCP

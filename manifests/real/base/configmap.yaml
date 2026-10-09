@@ -5,8 +5,6 @@ metadata:
   name: food-diary-configmap
 data:
   SERVER_PORT: "8080"
-  # доверять X-Forwarded-*: иначе редиректы строятся от усечённого Host без порта
-  SERVER_FORWARD_HEADERS_STRATEGY: "framework"
   DB_HOST: food-diary-db
   DB_PORT: "5432"
   DB_NAME: fooddiary

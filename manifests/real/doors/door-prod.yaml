@@ -1,0 +1,17 @@
+# «Дверь» прода: закреплённый nodePort на Envoy-поды продового шлюза.
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-door-prod
+  namespace: envoy-gateway-system
+spec:
+  type: NodePort
+  selector:
+    gateway.envoyproxy.io/owning-gateway-name: food-diary-gateway
+    gateway.envoyproxy.io/owning-gateway-namespace: food-diary-prod
+  ports:
+  - name: http
+    nodePort: 32443          # хост: 80 (minikube start --ports 80:32443)
+    port: 80
+    targetPort: 10080        # Envoy-контейнер под non-root слушает 10080
+    protocol: TCP

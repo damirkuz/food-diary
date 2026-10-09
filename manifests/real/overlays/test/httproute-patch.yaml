@@ -5,16 +5,3 @@ metadata:
 spec:
   hostnames:
     - test.food-diary.local
-  rules:
-  # приложение должно видеть настоящий host:port, иначе абсолютные редиректы теряют порт
-  - filters:
-    - type: RequestHeaderModifier
-      requestHeaderModifier:
-        set:
-        - name: x-forwarded-host
-          value: test.food-diary.local:8080
-        - name: x-forwarded-port
-          value: "8080"
-    backendRefs:
-    - name: food-diary-service
-      port: 80
