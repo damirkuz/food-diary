@@ -19,7 +19,7 @@ spec:
         app: food-diary
     spec:
       containers:
-      - image: food-diary:1.0.1
+      - image: food-diary:1.0.2
         name: food-diary
         envFrom:
           - configMapRef:

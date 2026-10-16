@@ -8,6 +8,7 @@ import ru.kuzdikenov.fooddiary.dto.FoodEntryCalculation
 import ru.kuzdikenov.fooddiary.entity.FoodEntryEntity
 import ru.kuzdikenov.fooddiary.exception.FoodEntryNotFoundException
 import ru.kuzdikenov.fooddiary.exception.UserNotFoundException
+import ru.kuzdikenov.fooddiary.logging.BusinessEventLogger
 import ru.kuzdikenov.fooddiary.repository.FoodEntryRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 import ru.kuzdikenov.fooddiary.service.command.FoodEntryUpsertCommand
@@ -38,7 +39,11 @@ class FoodEntryService (
                 user = user,
                 product = product
             )
-        )
+        ).also {
+            BusinessEventLogger.afterCommit(
+                "food_entry_created", "Создана запись дневника питания", mapOf("food_entry_id" to it.id)
+            )
+        }
     }
 
     @Transactional

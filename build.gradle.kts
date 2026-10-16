@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "ru.kuzdikenov"
-version = "1.0.1"
+version = "1.0.3"
 description = "semester-work-spring"
 
 java {

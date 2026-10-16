@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import ru.kuzdikenov.fooddiary.entity.ProductEntity
 import ru.kuzdikenov.fooddiary.exception.UserNotFoundException
+import ru.kuzdikenov.fooddiary.logging.BusinessEventLogger
 import ru.kuzdikenov.fooddiary.repository.ProductRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
@@ -32,7 +33,11 @@ class ProductService(
             owner = owner
         )
 
-        return productRepository.save(product)
+        return productRepository.save(product).also {
+            BusinessEventLogger.afterCommit(
+                "product_created", "Создан продукт", mapOf("product_id" to it.id)
+            )
+        }
     }
 
     @Transactional(readOnly = true)
