@@ -35,6 +35,25 @@ spec:
                   key: DB_PASSWORD
           ports:
             - containerPort: 5432
+          # На инициализацию или восстановление базы даём до пяти минут.
+          startupProbe:
+            exec:
+              command: ["sh", "-c", 'exec pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", 'exec pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", 'exec pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
