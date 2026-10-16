@@ -1,0 +1,38 @@
+# Helm-чарт grafana-community/grafana версии 14.0.1.
+fullnameOverride: grafana
+
+plugins:
+  - victoriametrics-logs-datasource@0.33.1
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: VictoriaLogs
+        uid: victorialogs
+        type: victoriametrics-logs-datasource
+        access: proxy
+        url: http://vls-victoria-logs-single-server.logging.svc.cluster.local:9428
+        editable: false
+
+persistence:
+  enabled: true
+  size: 1Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+grafana.ini:
+  users:
+    allow_sign_up: false
+  analytics:
+    reporting_enabled: false
+    check_for_updates: false

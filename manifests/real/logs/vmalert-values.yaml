@@ -1,0 +1,66 @@
+# Helm-чарт vm/victoria-metrics-alert версии 0.51.0.
+server:
+  fullnameOverride: vmalert-logs
+  image:
+    tag: v1.154.0
+  datasource:
+    url: http://vls-victoria-logs-single-server.logging.svc.cluster.local:9428
+  notifier:
+    url: http://alertmanager-logs.logging.svc.cluster.local:9093
+  extraArgs:
+    rule.defaultRuleType: vlogs
+    rule.evalDelay: 2s
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+  config:
+    alerts:
+      groups:
+        - name: food-diary-logs
+          type: vlogs
+          interval: 30s
+          rules:
+            - alert: FoodDiaryHttpErrors
+              expr: |
+                _time:5m service.name:food-diary
+                k8s.namespace.name:food-diary-prod
+                event:http_request_completed
+                http.status_code:>=500 http.status_code:<600
+                | stats by (service.name) count() as errors
+                | filter errors:>=3
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Повторяющиеся серверные ошибки food-diary"
+                description: "Не менее трёх HTTP 5xx за последние пять минут в prod."
+
+alertmanager:
+  enabled: true
+  fullnameOverride: alertmanager-logs
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  persistentVolume:
+    enabled: true
+    size: 128Mi
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: local-only
+      group_by: [alertname, service.name]
+      group_wait: 5s
+      group_interval: 30s
+      repeat_interval: 4h
+    # Алерты доступны в интерфейсе Alertmanager, внешние уведомления не отправляются.
+    receivers:
+      - name: local-only
