@@ -3,6 +3,8 @@ server:
   shutdown: graceful
 
 spring:
+  main:
+    banner-mode: "off"
   application:
     name: food-diary
   lifecycle:
@@ -49,6 +51,16 @@ app:
   admin:
     email: ${APP_ADMIN_EMAIL:}
     password: ${APP_ADMIN_PASSWORD:}
+
+logging:
+  structured:
+    format:
+      console: logstash
+    json:
+      rename:
+        "[@timestamp]": timestamp
+      add:
+        "[service.name]": ${spring.application.name}
 
 management:
   endpoints:
