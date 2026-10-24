@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: food-diary-db
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+        prometheus.io/path: "/metrics"
     spec:
       terminationGracePeriodSeconds: 30
       containers:
@@ -57,6 +61,36 @@ spec:
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
+        - name: postgres-exporter
+          image: prometheuscommunity/postgres-exporter:v0.20.1
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: food-diary-configmap
+                  key: DB_NAME
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: food-diary-configmap
+                  key: DB_PORT
+            - name: DATA_SOURCE_URI
+              value: "localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable"
+            - name: DATA_SOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: food-diary-secret
+                  key: DB_USER
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: food-diary-secret
+                  key: DB_PASSWORD
+
+          ports:
+            - name: pg-metrics
+              containerPort: 9187
+
   volumeClaimTemplates:
     - metadata:
         name: postgres-data
