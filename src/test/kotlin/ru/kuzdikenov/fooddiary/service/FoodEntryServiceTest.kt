@@ -1,5 +1,7 @@
 package ru.kuzdikenov.fooddiary.service
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -17,12 +19,13 @@ import java.time.LocalDate
 import java.util.Optional
 
 class FoodEntryServiceTest {
+    private val businessMetrics = BusinessMetrics(SimpleMeterRegistry())
 
     private val foodEntryRepository = Mockito.mock(FoodEntryRepository::class.java)
     private val userRepository = Mockito.mock(UserRepository::class.java)
     private val productRepository = Mockito.mock(ProductRepository::class.java)
     private val productDomainService = ProductDomainService(productRepository)
-    private val service = FoodEntryService(foodEntryRepository, userRepository, productDomainService)
+    private val service = FoodEntryService(foodEntryRepository, userRepository, productDomainService, businessMetrics)
 
     @Test
     fun `creates food entry with calculated nutrition`() {

@@ -15,7 +15,7 @@ Spring Boot-приложение на Kotlin с серверным веб-инт
 - **Профиль и нормы.** Расчёт дневной нормы калорий, белков, жиров и углеводов по параметрам профиля (пол, уровень активности, цель).
 - **Регистрация и роли.** Form login, валидация формы регистрации, роли `USER`/`ADMIN`, автоматическое создание администратора из переменных окружения при первом запуске.
 - **Админ-панель.** Управление пользователями и продуктами из веб-интерфейса.
-- **Мониторинг.** Spring Boot Actuator: `/actuator/health` (включая liveness/readiness), `/actuator/metrics`; healthcheck контейнера приложения в docker compose.
+- **Мониторинг.** Spring Boot Actuator на отдельном порту 8081: health-пробы, `/actuator/metrics`, `/actuator/prometheus`; четыре бизнес-счётчика и сбор через VictoriaMetrics.
 - **REST API.** `/api/diary`, `/api/diary/entries`, `/api/products`, `/api/products/nutrition-lookup` — спецификация в `src/main/resources/openapi/openapi.yaml`.
 - **Миграции и тесты.** Flyway (V1–V6), unit-, слайс- и сквозной интеграционный тест (Testcontainers: PostgreSQL + Redis), отчёт покрытия JaCoCo.
 
@@ -72,7 +72,7 @@ docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
 ./gradlew test
 ```
 
-Сквозной интеграционный тест поднимает реальные PostgreSQL и Redis через Testcontainers — запущенный Docker обязателен.
+Сквозной интеграционный тест поднимает PostgreSQL, Redis и VictoriaMetrics через Testcontainers — запущенный Docker обязателен.
 
 ## Логирование
 

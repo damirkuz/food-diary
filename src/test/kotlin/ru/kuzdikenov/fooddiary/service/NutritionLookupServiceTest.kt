@@ -1,5 +1,7 @@
 package ru.kuzdikenov.fooddiary.service
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -12,10 +14,11 @@ import ru.kuzdikenov.fooddiary.exception.NutritionLookupNotFoundException
 import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
 
 class NutritionLookupServiceTest {
+    private val businessMetrics = BusinessMetrics(SimpleMeterRegistry())
 
     private val cacheService = Mockito.mock(ProductLookupCacheService::class.java)
     private val provider = Mockito.mock(NutritionProvider::class.java)
-    private val service = NutritionLookupService(listOf(provider), cacheService)
+    private val service = NutritionLookupService(listOf(provider), cacheService, businessMetrics)
 
     @Test
     fun `returns cached product without calling providers`() {

@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "ru.kuzdikenov"
-version = "1.0.3"
+version = "1.0.4"
 description = "semester-work-spring"
 
 java {
@@ -48,6 +48,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-session-data-redis")
 
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("org.flywaydb:flyway-database-postgresql")

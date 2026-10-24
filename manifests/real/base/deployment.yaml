@@ -17,9 +17,13 @@ spec:
     metadata:
       labels:
         app: food-diary
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
-      - image: food-diary:1.0.3
+      - image: food-diary:1.0.4
         name: food-diary
         envFrom:
           - configMapRef:
@@ -28,11 +32,14 @@ spec:
               name: food-diary-secret
         ports:
         - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: management
         # До успешного запуска остальные пробы не выполняются.
         startupProbe:
           httpGet:
             path: /actuator/health/liveness
-            port: 8080
+            port: management
           periodSeconds: 5
           timeoutSeconds: 2
           failureThreshold: 36
@@ -40,7 +47,7 @@ spec:
           failureThreshold: 3
           httpGet:
             path: /actuator/health/readiness
-            port: 8080
+            port: management
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 1
@@ -48,7 +55,7 @@ spec:
           failureThreshold: 3
           httpGet:
             path: /actuator/health/liveness
-            port: 8080
+            port: management
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 1

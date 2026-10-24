@@ -1,4 +1,6 @@
 server:
+  extraArgs:
+    promscrape.configCheckInterval: 30s
   scrape:
     enabled: true
     configMap: ""

@@ -19,6 +19,6 @@ COPY --from=build /workspace/build/libs/fooddiary-*.jar /app/app.jar
 
 USER fooddiary
 
-EXPOSE 8080
+EXPOSE 8080 8081
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

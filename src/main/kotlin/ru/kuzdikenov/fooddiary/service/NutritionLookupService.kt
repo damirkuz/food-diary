@@ -6,6 +6,7 @@ import ru.kuzdikenov.fooddiary.dto.ProductLookup
 import ru.kuzdikenov.fooddiary.exception.ExternalNutritionLookupException
 import ru.kuzdikenov.fooddiary.exception.NutritionLookupNotFoundException
 import ru.kuzdikenov.fooddiary.logging.BusinessEventLogger
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
 import java.util.Locale
 
@@ -13,6 +14,7 @@ import java.util.Locale
 class NutritionLookupService(
     private val lookupProviders: List<NutritionProvider>,
     private val productLookupCacheService: ProductLookupCacheService,
+    private val businessMetrics: BusinessMetrics,
 ) {
 
     fun lookupProductNutrition(name: String): ProductLookup {
@@ -34,6 +36,7 @@ class NutritionLookupService(
             source = "external_api"
             throw ex
         } finally {
+            businessMetrics.nutritionLookupCompleted(outcome, cached)
             val level = when (outcome) {
                 "success" -> Level.INFO
                 "not_found" -> Level.WARN

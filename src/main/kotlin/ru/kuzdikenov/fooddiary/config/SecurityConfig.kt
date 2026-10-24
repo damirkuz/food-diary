@@ -43,6 +43,7 @@ class SecurityConfig(
                         "/images/**",
                         "/webjars/**",
                         "/actuator/health/**",
+                        "/actuator/prometheus",
                         "/error"
                     ).permitAll()
                     .requestMatchers("/admin/**").access { authentication, context ->

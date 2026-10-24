@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import ru.kuzdikenov.fooddiary.entity.UserEntity
 import ru.kuzdikenov.fooddiary.exception.EmailAlreadyExistsException
 import ru.kuzdikenov.fooddiary.form.RegisterForm
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import ru.kuzdikenov.fooddiary.repository.RoleRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 
@@ -13,7 +14,8 @@ import ru.kuzdikenov.fooddiary.repository.UserRepository
 class RegisterService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val businessMetrics: BusinessMetrics,
 ) {
 
     @Transactional
@@ -36,5 +38,6 @@ class RegisterService(
         user.addRole(userRole)
 
         userRepository.save(user)
+        businessMetrics.registrationSucceeded()
     }
 }

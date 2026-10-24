@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import ru.kuzdikenov.fooddiary.entity.ProductEntity
 import ru.kuzdikenov.fooddiary.exception.UserNotFoundException
 import ru.kuzdikenov.fooddiary.logging.BusinessEventLogger
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import ru.kuzdikenov.fooddiary.repository.ProductRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
@@ -16,6 +17,7 @@ class ProductService(
     private val productRepository: ProductRepository,
     private val userRepository: UserRepository,
     private val productDomainService: ProductDomainService,
+    private val businessMetrics: BusinessMetrics,
 ) {
 
     @Transactional
@@ -34,6 +36,7 @@ class ProductService(
         )
 
         return productRepository.save(product).also {
+            businessMetrics.productCreated()
             BusinessEventLogger.afterCommit(
                 "product_created", "Создан продукт", mapOf("product_id" to it.id)
             )

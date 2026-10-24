@@ -1,5 +1,7 @@
 package ru.kuzdikenov.fooddiary.logging
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -27,6 +29,7 @@ import java.time.LocalDate
 import java.util.Optional
 
 class BusinessEventLoggingTest {
+    private val businessMetrics = BusinessMetrics(SimpleMeterRegistry())
     private val logger = LoggerFactory.getLogger("ru.kuzdikenov.fooddiary.logging.BusinessEventLogger") as Logger
     private val previousLevel = logger.level
     private val appender = object : ListAppender<ILoggingEvent>() {
@@ -92,7 +95,7 @@ class BusinessEventLoggingTest {
         ))
         given(entries.save(Mockito.any(FoodEntryEntity::class.java)))
             .willAnswer { it.getArgument<FoodEntryEntity>(0).apply { id = 15 } }
-        val service = FoodEntryService(entries, users, domain)
+        val service = FoodEntryService(entries, users, domain, businessMetrics)
         transaction.executeWithoutResult {
             service.createFoodEntry(FoodEntryUpsertCommand(LocalDate.now(), MealType.LUNCH, 42, 100.0), 7)
             assertTrue(appender.list.isEmpty())
@@ -106,7 +109,7 @@ class BusinessEventLoggingTest {
     fun lookupLogsCacheHitWithoutSearchQuery() {
         val cache = Mockito.mock(ProductLookupCacheService::class.java)
         given(cache.get("private-query")).willReturn(lookup(true))
-        NutritionLookupService(emptyList(), cache).lookupProductNutrition("private-query")
+        NutritionLookupService(emptyList(), cache, businessMetrics).lookupProductNutrition("private-query")
         assertEquals("nutrition_lookup_completed", fields()["event"])
         assertEquals("success", fields()["outcome"])
         assertEquals(true, fields()["cached"])
@@ -120,7 +123,7 @@ class BusinessEventLoggingTest {
         val cache = Mockito.mock(ProductLookupCacheService::class.java)
         val provider = Mockito.mock(NutritionProvider::class.java)
         given(provider.lookup("private-query")).willReturn(lookup(false))
-        NutritionLookupService(listOf(provider), cache).lookupProductNutrition("private-query")
+        NutritionLookupService(listOf(provider), cache, businessMetrics).lookupProductNutrition("private-query")
         assertEquals("success", fields()["outcome"])
         assertEquals(false, fields()["cached"])
         assertEquals("external_api", fields()["source"])
@@ -132,7 +135,7 @@ class BusinessEventLoggingTest {
         val provider = Mockito.mock(NutritionProvider::class.java)
         given(provider.lookup("private-query")).willThrow(ExternalNutritionLookupException())
         assertThrows(ExternalNutritionLookupException::class.java) {
-            NutritionLookupService(listOf(provider), cache).lookupProductNutrition("private-query")
+            NutritionLookupService(listOf(provider), cache, businessMetrics).lookupProductNutrition("private-query")
         }
         assertEquals("external_error", fields()["outcome"])
         assertEquals(Level.ERROR, appender.list.single().level)
@@ -142,7 +145,7 @@ class BusinessEventLoggingTest {
     fun lookupLogsNotFoundAsWarning() {
         val cache = Mockito.mock(ProductLookupCacheService::class.java)
         assertThrows(NutritionLookupNotFoundException::class.java) {
-            NutritionLookupService(emptyList(), cache).lookupProductNutrition("private-query")
+            NutritionLookupService(emptyList(), cache, businessMetrics).lookupProductNutrition("private-query")
         }
         assertEquals("not_found", fields()["outcome"])
         assertEquals(Level.WARN, appender.list.single().level)
@@ -153,7 +156,7 @@ class BusinessEventLoggingTest {
     private fun productService(): ProductService {
         given(products.save(Mockito.any(ProductEntity::class.java)))
             .willAnswer { it.getArgument<ProductEntity>(0).apply { id = 42 } }
-        return ProductService(products, users, domain)
+        return ProductService(products, users, domain, businessMetrics)
     }
 
     private fun productCommand() = ProductUpsertCommand("private-food", 100.0, 1.0, 1.0, 1.0)

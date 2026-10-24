@@ -1,5 +1,7 @@
 package ru.kuzdikenov.fooddiary.service
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -17,11 +19,12 @@ import ru.kuzdikenov.fooddiary.service.command.ProductUpsertCommand
 import java.util.Optional
 
 class ProductServiceTest {
+    private val businessMetrics = BusinessMetrics(SimpleMeterRegistry())
 
     private val productRepository = Mockito.mock(ProductRepository::class.java)
     private val userRepository = Mockito.mock(UserRepository::class.java)
     private val productDomainService = ProductDomainService(productRepository)
-    private val service = ProductService(productRepository, userRepository, productDomainService)
+    private val service = ProductService(productRepository, userRepository, productDomainService, businessMetrics)
 
     @Test
     fun `creates product for owner`() {

@@ -1,5 +1,7 @@
 package ru.kuzdikenov.fooddiary.service
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
+import ru.kuzdikenov.fooddiary.metrics.BusinessMetrics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -15,11 +17,12 @@ import ru.kuzdikenov.fooddiary.repository.RoleRepository
 import ru.kuzdikenov.fooddiary.repository.UserRepository
 
 class RegisterServiceTest {
+    private val businessMetrics = BusinessMetrics(SimpleMeterRegistry())
 
     private val userRepository = Mockito.mock(UserRepository::class.java)
     private val roleRepository = Mockito.mock(RoleRepository::class.java)
     private val passwordEncoder = Mockito.mock(PasswordEncoder::class.java)
-    private val service = RegisterService(userRepository, roleRepository, passwordEncoder)
+    private val service = RegisterService(userRepository, roleRepository, passwordEncoder, businessMetrics)
 
     @Test
     fun `registers normalized user with role and encoded password`() {
