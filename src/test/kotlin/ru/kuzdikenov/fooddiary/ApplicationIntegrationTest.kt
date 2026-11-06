@@ -55,7 +55,7 @@ import ru.kuzdikenov.fooddiary.service.nutrition.NutritionProvider
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["management.server.port=0"],
+    properties = ["management.server.port=0", "app.observability.synthetic-users=synthetic-metrics@test.local"],
 )
 @Testcontainers
 class ApplicationIntegrationTest {
@@ -136,6 +136,22 @@ class ApplicationIntegrationTest {
         )
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+    }
+
+    @Test
+    fun `authenticated synthetic API traffic has its own bounded metric label`() {
+        val email = "synthetic-metrics@test.local"
+        register(email, "password123")
+        val sessionCookie = login(email, "password123")
+        val headers = HttpHeaders().apply { add(HttpHeaders.COOKIE, sessionCookie) }
+        val response = restTemplate.exchange(
+            "$baseUrl/api/products", HttpMethod.GET, HttpEntity<Void>(headers), String::class.java
+        )
+        assertEquals(HttpStatus.OK, response.statusCode)
+        val timer = meters.find("http.server.requests")
+            .tags("uri", "/api/products", "traffic", "synthetic").timer()
+        assertTrue(timer != null && timer.count() >= 1, "Technical API request must be tagged synthetic")
+        assertFalse(timer!!.id.tags.any { it.value == email }, "Do not expose account identifiers as labels")
     }
 
     @Test

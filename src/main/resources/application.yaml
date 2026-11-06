@@ -47,6 +47,8 @@ provider:
     enabled: ${OPEN_FOOD_FACTS_ENABLED:true}
 
 app:
+  observability:
+    synthetic-users: ${SYNTHETIC_USERS:}
   nutrition-lookup-cache-duration-days: 7
   admin:
     email: ${APP_ADMIN_EMAIL:}

@@ -14,6 +14,7 @@ data:
   FREEMARKER_CACHE: "false"
   # Внешний поиск продуктов через Open Food Facts (без API-ключа)
   OPEN_FOOD_FACTS_ENABLED: "true"
+  SYNTHETIC_USERS: "slo-probe@food-diary.local"
 
 ...
 

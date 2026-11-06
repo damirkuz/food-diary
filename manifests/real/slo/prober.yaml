@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: food-diary-prober
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: food-diary-prober
+  template:
+    metadata:
+      labels:
+        app: food-diary-prober
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: prober
+          image: food-diary-prober:1.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PROBE_BASE_URL
+              value: http://food-diary-door-prod.envoy-gateway-system.svc.cluster.local
+            - name: PROBE_HOST
+              value: food-diary.local
+            - name: PROBE_INTERVAL_SECONDS
+              value: "15"
+            - name: PROBE_TIMEOUT_SECONDS
+              value: "5"
+          envFrom:
+            - secretRef:
+                name: food-diary-prober
+          ports:
+            - name: metrics
+              containerPort: 8000
+          readinessProbe:
+            tcpSocket:
+              port: metrics
+          livenessProbe:
+            tcpSocket:
+              port: metrics
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 96Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: food-diary-prober
+spec:
+  selector:
+    app: food-diary-prober
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: metrics

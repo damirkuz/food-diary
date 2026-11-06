@@ -23,7 +23,7 @@ spec:
         prometheus.io/path: "/actuator/prometheus"
     spec:
       containers:
-      - image: food-diary:1.0.4
+      - image: food-diary:1.0.5
         name: food-diary
         envFrom:
           - configMapRef:
